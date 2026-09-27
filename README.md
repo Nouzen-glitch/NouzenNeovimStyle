@@ -696,9 +696,7 @@ and lazy.nvim will bootstrap and install the plugins.
 
 ---
 
-# 23. What this intentionally does NOT include yet
-
-I would add these only after the core system works:
+# 23. What this does NOT include yet
 
 - Debug Adapter Protocol / DAP
 - AI coding assistants
@@ -710,8 +708,3 @@ I would add these only after the core system works:
 - elaborate animations
 - dozens of language servers
 - dozens of color/UI plugins
-
-Get the **editing + LSP + completion + navigation + diagnostics** system
-rock-solid first.
-
-That is the part that actually turns Neovim into an IDE.
