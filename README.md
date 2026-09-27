@@ -64,7 +64,7 @@ You need:
 - `unzip`
 - a Nerd Font is recommended for icons
 
-For Arch/Garuda:
+For Arch:
 
 ```bash
 sudo pacman -Syu
