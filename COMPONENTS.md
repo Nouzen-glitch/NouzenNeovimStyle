@@ -24,6 +24,7 @@
 | which-key | Discover keybindings | `lua/plugins/textobjects.lua` |
 | lualine | Statusline | `lua/plugins/ui.lua` |
 | TokyoNight | Theme | `lua/plugins/ui.lua` |
+| toggleterm.nvim | Integrated terminal toggle | `lua/plugins/terminal.lua` |
 
 ## Core VS Code replacements
 
@@ -43,3 +44,5 @@
 - Formatting: Conform (`<leader>f`)
 - Git gutter: Gitsigns
 - Snippets: LuaSnip
+- Integrated terminal: toggleterm.nvim (`<C-\>`)
+

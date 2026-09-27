@@ -380,6 +380,17 @@ depending on the language server.
 <leader>ws  horizontal split
 <leader>wd  close window
 ```
+### Integrated Terminal
+
+`<C-\>` toggles a persistent VS Code-style terminal window at the bottom.
+
+Inside the active terminal window:
+- `<Esc>`       Exit terminal input mode (switch to Normal mode to scroll or search)
+- `i` or `a`    Re-enter terminal input mode to type commands
+- `<C-h>`       Navigate out to the left window split
+- `<C-j>`       Navigate out to the bottom window split
+- `<C-k>`       Navigate out to the top window split
+- `<C-l>`       Navigate out to the right window split
 
 ---
 
@@ -522,6 +533,10 @@ The configuration intentionally separates concerns:
         ├── textobjects.lua
         ├── treesitter.lua
         └── ui.lua
+        └── terminal.lua
+        
+```
+
 ```
 
 This is intentional.

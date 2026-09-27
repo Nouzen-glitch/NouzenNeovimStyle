@@ -192,6 +192,7 @@ LSP/language       → plugins/lsp.lua
 Syntax             → plugins/treesitter.lua
 Formatting         → plugins/formatting.lua
 Appearance         → plugins/ui.lua
+Integrated Terminal shortcut → plugins/terminal.lua
 ```
 
 ## 9. Git
