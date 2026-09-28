@@ -33,7 +33,6 @@
 
 | Mode | Key | Description |
 | --- | --- | --- |
-| ` ` | `<Plug>luasnip-expand-repeat` | LuaSnip: Repeat last node expansion |
 | `n` | ` ?` | Show all keybindings |
 | `n` | ` D` | Type definition |
 | `n` | ` bd` | Delete buffer |
@@ -77,7 +76,6 @@
 | `n` | `<Plug>(MatchitNormalForward)` |  |
 | `n` | `<Plug>(MatchitNormalMultiBackward)` |  |
 | `n` | `<Plug>(MatchitNormalMultiForward)` |  |
-| `n` | `<Plug>luasnip-delete-check` | LuaSnip: Removes current snippet from jumplist |
 | `n` | `<Right>` |  |
 | `n` | `<Up>` |  |
 | `n` | `H` | Previous buffer |
@@ -124,8 +122,6 @@
 | `n` | `g%` |  |
 | `n` | `gD` | Go to declaration |
 | `n` | `gO` | vim.lsp.buf.document_symbol() |
-| `n` | `g[` | Move to left "around" |
-| `n` | `g]` | Move to right "around" |
 | `n` | `gc` | Toggle comment |
 | `n` | `gcc` | Toggle comment line |
 | `n` | `gd` | Go to definition |
@@ -148,25 +144,13 @@
 | `o` | `<Plug>(MatchitOperationMultiForward)` |  |
 | `o` | `[%` |  |
 | `o` | `]%` |  |
-| `o` | `a` | Around textobject |
-| `o` | `al` | Around last textobject |
-| `o` | `an` | Around next textobject |
+| `o` | `an` | Select parent (outer) node |
 | `o` | `g%` |  |
-| `o` | `g[` | Move to left "around" |
-| `o` | `g]` | Move to right "around" |
 | `o` | `gc` | Comment textobject |
-| `o` | `i` | Inside textobject |
-| `o` | `il` | Inside last textobject |
-| `o` | `in` | Inside next textobject |
+| `o` | `in` | Select child (inner) node |
 | `s` | `<C-S>` | vim.lsp.buf.signature_help() |
-| `s` | `<Plug>luasnip-expand-or-jump` | LuaSnip: Expand or jump in the current snippet |
-| `s` | `<Plug>luasnip-expand-snippet` | LuaSnip: Expand the current snippet |
-| `s` | `<Plug>luasnip-jump-next` | LuaSnip: Jump to the next node |
-| `s` | `<Plug>luasnip-jump-prev` | LuaSnip: Jump to the previous node |
-| `s` | `<Plug>luasnip-next-choice` | LuaSnip: Change to the next choice from the choiceNode |
-| `s` | `<Plug>luasnip-prev-choice` | LuaSnip: Change to the previous choice from the choiceNode |
-| `s` | `<S-Tab>` | cmp.utils.keymap.set_map |
-| `s` | `<Tab>` | cmp.utils.keymap.set_map |
+| `s` | `<S-Tab>` | vim.snippet.jump if active, otherwise <S-Tab> |
+| `s` | `<Tab>` | vim.snippet.jump if active, otherwise <Tab> |
 | `v` | ` ca` | Code action |
 | `v` | ` cf` | Format file/selection |
 | `v` | `<Down>` |  |
@@ -191,19 +175,13 @@
 | `x` | `]%` |  |
 | `x` | `]N` | Select next sibling node |
 | `x` | `]n` | Select next node |
-| `x` | `a` | Around textobject |
 | `x` | `a%` |  |
-| `x` | `al` | Around last textobject |
-| `x` | `an` | Around next textobject |
+| `x` | `an` | Select parent (outer) node |
 | `x` | `g%` |  |
-| `x` | `g[` | Move to left "around" |
-| `x` | `g]` | Move to right "around" |
 | `x` | `gc` | Toggle comment |
 | `x` | `gra` | vim.lsp.buf.code_action() |
 | `x` | `gx` | Opens filepath or URI under cursor with the system handler (file explorer, web browser, …) |
-| `x` | `i` | Inside textobject |
-| `x` | `il` | Inside last textobject |
-| `x` | `in` | Inside next textobject |
+| `x` | `in` | Select child (inner) node |
 
 ## User/plugin Ex commands
 
@@ -211,18 +189,12 @@
 | --- | --- |
 | `:Cheatsheet` | Open live Neovim cheatsheet |
 | `:CheatsheetUpdate` | Regenerate live Neovim cheatsheet |
-| `:CmpStatus` | Check status of cmp sources |
-| `:ConformInfo` | Show information about Conform formatters |
 | `:DoMatchParen` | call s:DoMatchParen() |
 | `:EditQuery` | Edit treesitter query |
-| `:Gitsigns` |  |
 | `:Inspect` | Inspect highlights and extmarks at the cursor |
 | `:InspectTree` | Inspect treesitter language tree for buffer |
-| `:Lazy` | Lazy |
 | `:LspInstall` | Install one or more LSP servers. |
 | `:LspUninstall` | Uninstall one or more LSP servers. |
-| `:LuaSnipListAvailable` |  |
-| `:LuaSnipUnlinkCurrent` |  |
 | `:Man` |  |
 | `:Mason` | Opens mason's UI window. |
 | `:MasonInstall` | Install one or more packages. |
@@ -238,7 +210,6 @@
 | `:NvimTreeFocus` |  |
 | `:NvimTreeOpen` |  |
 | `:NvimTreeToggle` |  |
-| `:NvimWebDeviconsHiTest` | nvim-web-devicons: highlight test |
 | `:Open` | Open file with system default handler. See :help vim.ui.open() |
 | `:TSBufDisable` | lua require'nvim-treesitter.configs'.commands.TSBufDisable['run<bang>'](<f-args>) |
 | `:TSBufEnable` | lua require'nvim-treesitter.configs'.commands.TSBufEnable['run<bang>'](<f-args>) |
@@ -269,7 +240,6 @@
 | `:Trouble` |  |
 | `:Tutor` | call tutor#TutorCmd(<q-args>) |
 | `:UpdateRemotePlugins` | call remote#host#UpdateRemotePlugins() |
-| `:WhichKey` |  |
 
 ## Environment
 
@@ -278,13 +248,11 @@
 | Neovim | `0.12.5` |
 | Config | `/home/baleygr/.config/nvim` |
 | Data | `/home/baleygr/.local/share/nvim` |
-| Lazy plugins | `21 loaded / 26 total` |
+| Lazy plugins | `7 loaded / 26 total` |
 
 ## LSP servers currently attached
 
-| Server | Root |
-| --- | --- |
-| `clangd` | `/home/baleygr/dotfiles/nvim` |
+No LSP clients are currently attached.
 
 ## Built-in documentation
 

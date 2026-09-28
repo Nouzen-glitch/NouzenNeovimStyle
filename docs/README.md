@@ -119,5 +119,6 @@ Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 
 ## Not included (yet)
 
-DAP debugging, AI assistants, database/REST/Docker clients, terminal
-multiplexing, dashboards.
+DAP debugging, AI assistants, database/REST/Docker clients, persistent
+terminal sessions (tmux/zellij-style detach and reattach), dashboards.
+Multiple numbered terminals are supported via toggleterm (`2<C-\>`, `:TermSelect`).
