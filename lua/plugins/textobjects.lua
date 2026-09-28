@@ -8,6 +8,6 @@ return {
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
-        opts = {},
+        opts = {spec = require("config.leader_groups").which_key_spec()},
     },
 }

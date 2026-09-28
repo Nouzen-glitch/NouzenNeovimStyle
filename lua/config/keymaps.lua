@@ -67,8 +67,8 @@ map("n", "<leader>ih", function()
 end, { desc = "Toggle inlay hints" })
 
 -- Diagnostics.
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Previous diagnostic" })
+map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next diagnostic" })
 map("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 map("n", "<leader>dq", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
@@ -85,6 +85,15 @@ map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Search help" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
 
+map("n", "<leader>fc", "<cmd>Telescope commands<cr>", { desc = "Find commands" })
+map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Find keymaps" })
+map("n", "<leader>fC", "<cmd>Cheatsheet<cr>", { desc = "Open generated cheatsheet" })
+
+-- Discover all globally registered keybindings with which-key.
+map("n", "<leader>?", function()
+    require("which-key").show({ global = true })
+end, { desc = "Show all keybindings" })
+
 -- ============================================================================
 -- Explorer / diagnostics / formatting
 -- ============================================================================
@@ -93,7 +102,7 @@ map("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle file explorer"
 map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics panel" })
 map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Buffer diagnostics" })
 
-map({ "n", "v" }, "<leader>f", function()
+map({ "n", "v" }, "<leader>cf", function()
     require("conform").format({
         async = true,
         lsp_fallback = true,

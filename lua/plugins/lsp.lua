@@ -10,25 +10,12 @@ return {
             -- Mason installs the actual language servers.
             -- mason-lspconfig then enables installed servers through
             -- Neovim's modern vim.lsp.enable() mechanism.
-            require("mason").setup()
-
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    "clangd",
-                    "basedpyright",
-                    "lua_ls",
-                    "rust_analyzer",
-                    "bashls",
-                },
-                automatic_enable = true,
-            })
             -- LuaLS configuration for this Neovim configuration itself.
-            local nvim_config = vim.fn.stdpath("config")
+            local nvim_config = vim.uv.fs_realpath(vim.fn.stdpath("config")) or vim.fn.stdpath("config")
 
             vim.lsp.config("lua_ls", {
                 root_dir = function(bufnr, on_dir)
-                    local file = vim.api.nvim_buf_get_name(bufnr)
-
+                    local file = vim.uv.fs_realpath(vim.api.nvim_buf_get_name(bufnr)) or ""
                     if file:sub(1, #nvim_config) == nvim_config then
                         on_dir(nvim_config)
                     end
@@ -70,7 +57,10 @@ return {
     {
         "mason-org/mason-lspconfig.nvim",
         lazy = false,
-        opts = {},
+        opts = {
+            ensure_installed = { "clangd", "basedpyright", "lua_ls", "rust_analyzer", "bashls" },
+            automatic_enable = true,
+        },
         dependencies = {
             { "mason-org/mason.nvim", opts = {} },
             "neovim/nvim-lspconfig",

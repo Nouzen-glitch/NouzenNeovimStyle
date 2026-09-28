@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Elite Neovim configuration
+
+[Path]
+PathChanged=%h/dotfiles/nvim
+Unit=cheatsheet-watch.service
+
+[Install]
+WantedBy=default.target

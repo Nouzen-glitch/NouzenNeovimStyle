@@ -1,0 +1,6 @@
+[Unit]
+Description=Regenerate Elite Neovim cheatsheet
+
+[Service]
+Type=oneshot
+ExecStart=%h/dotfiles/nvim/scripts/generate-cheatsheet.sh
