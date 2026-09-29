@@ -199,6 +199,11 @@
 | `:Mason` | Opens mason's UI window. |
 | `:MasonInstall` | Install one or more packages. |
 | `:MasonLog` | Opens the mason.nvim log. |
+| `:MasonToolsClean` |  |
+| `:MasonToolsInstall` |  |
+| `:MasonToolsInstallSync` |  |
+| `:MasonToolsUpdate` |  |
+| `:MasonToolsUpdateSync` |  |
 | `:MasonUninstall` | Uninstall one or more packages. |
 | `:MasonUninstallAll` | Uninstall all packages. |
 | `:MasonUpdate` | Update Mason registries. |
@@ -248,7 +253,7 @@
 | Neovim | `0.12.5` |
 | Config | `/home/baleygr/.config/nvim` |
 | Data | `/home/baleygr/.local/share/nvim` |
-| Lazy plugins | `7 loaded / 26 total` |
+| Lazy plugins | `8 loaded / 27 total` |
 
 ## LSP servers currently attached
 

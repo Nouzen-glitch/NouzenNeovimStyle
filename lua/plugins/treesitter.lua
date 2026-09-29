@@ -8,28 +8,16 @@ return {
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = {
-                    "c",
-                    "cpp",
-                    "python",
-                    "lua",
-                    "vim",
-                    "vimdoc",
-                    "bash",
-                    "rust",
-                    "javascript",
-                    "typescript",
-                    "json",
-                    "yaml",
-                    "markdown",
-                    "markdown_inline",
-                },
+                -- Parsers come from config/languages.lua (+ languages_local.lua).
+                ensure_installed = require("util.languages").parsers(),
                 highlight = {
                     enable = true,
                 },
                 indent = {
                     enable = true,
                 },
+                -- Fetch a parser on demand when you open an unlisted filetype
+                -- (highlighting only, no LSP). Set to false to install only listed parsers.
                 auto_install = true,
             })
         end,

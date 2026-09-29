@@ -1,3 +1,5 @@
+local languages = require("util.languages")
+
 return {
     {
         "neovim/nvim-lspconfig",
@@ -7,10 +9,14 @@ return {
             "mason-org/mason-lspconfig.nvim",
         },
         config = function()
-            -- Mason installs the actual language servers.
-            -- mason-lspconfig then enables installed servers through
-            -- Neovim's modern vim.lsp.enable() mechanism.
-            -- LuaLS configuration for this Neovim configuration itself.
+            -- Servers come from config/languages.lua (+ languages_local.lua).
+            -- Mason installs them; mason-lspconfig enables every installed
+            -- server through vim.lsp.enable().
+            --
+            -- Per-server settings go here, e.g.:
+            --   vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })
+
+            -- LuaLS is scoped to this Neovim configuration only.
             local nvim_config = vim.uv.fs_realpath(vim.fn.stdpath("config")) or vim.fn.stdpath("config")
 
             vim.lsp.config("lua_ls", {
@@ -23,25 +29,13 @@ return {
 
                 settings = {
                     Lua = {
-                        runtime = {
-                            version = "LuaJIT",
-                        },
-
-                        diagnostics = {
-                            globals = { "vim" },
-                        },
-
+                        runtime = { version = "LuaJIT" },
+                        diagnostics = { globals = { "vim" } },
                         workspace = {
                             checkThirdParty = false,
-                            library = {
-                                vim.env.VIMRUNTIME,
-                                nvim_config,
-                            },
+                            library = { vim.env.VIMRUNTIME, nvim_config },
                         },
-
-                        telemetry = {
-                            enable = false,
-                        },
+                        telemetry = { enable = false },
                     },
                 },
             })
@@ -58,12 +52,22 @@ return {
         "mason-org/mason-lspconfig.nvim",
         lazy = false,
         opts = {
-            ensure_installed = { "clangd", "basedpyright", "lua_ls", "rust_analyzer", "bashls" },
+            ensure_installed = languages.servers(),
             automatic_enable = true,
         },
         dependencies = {
             { "mason-org/mason.nvim", opts = {} },
             "neovim/nvim-lspconfig",
+        },
+    },
+
+    {
+        -- Installs formatters/linters listed under `tools` in languages.lua.
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        lazy = false,
+        dependencies = { "mason-org/mason.nvim" },
+        opts = {
+            ensure_installed = languages.tools(),
         },
     },
 

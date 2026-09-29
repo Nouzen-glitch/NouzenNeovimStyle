@@ -3,20 +3,8 @@ return {
         "stevearc/conform.nvim",
         event = { "BufReadPre", "BufNewFile" },
         opts = {
-            formatters_by_ft = {
-                c = { "clang_format" },
-                cpp = { "clang_format" },
-                python = { "ruff_format" },
-                lua = { "stylua" },
-                rust = { "rustfmt" },
-                javascript = { "prettier" },
-                typescript = { "prettier" },
-                json = { "prettier" },
-                yaml = { "prettier" },
-                markdown = { "prettier" },
-                sh = { "shfmt" },
-                bash = { "shfmt" },
-            },
+            -- Built from config/languages.lua (+ languages_local.lua).
+            formatters_by_ft = require("util.languages").formatters_by_ft(),
 
             format_on_save = function(bufnr)
                 -- Disable automatic formatting for huge files.

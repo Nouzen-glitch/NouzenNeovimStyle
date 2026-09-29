@@ -45,10 +45,10 @@ Commit `lazy-lock.json` so plugin versions are reproducible.
 
 ## 5. Adding a language
 
-1. `plugins/lsp.lua`: add the server to `mason-lspconfig` `ensure_installed`.
-2. `plugins/treesitter.lua`: add the parser to `ensure_installed`.
-3. `plugins/formatting.lua`: add to `formatters_by_ft`, then
-   `:MasonInstall <formatter>`.
+Add one line to `lua/config/languages_local.lua` (or `languages.lua` for a new
+default) and restart. The server, parser,
+formatter and formatter tools are derived from it and installed
+automatically. Full guide: [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md).
 
 ## 6. Useful commands
 
@@ -56,7 +56,8 @@ Commit `lazy-lock.json` so plugin versions are reproducible.
 | --- | --- |
 | `:Lazy` | Plugin manager |
 | `:Mason` | Servers and tools |
-| `:LspInfo` | Servers attached to current buffer |
+| `:checkhealth vim.lsp` | Servers attached to current buffer |
+| `:MasonToolsInstall` | Install any missing formatters/tools from the language table |
 | `:ConformInfo` | Formatter status |
 | `:TSUpdate` | Update parsers |
 | `:checkhealth` | Diagnose everything |
@@ -98,7 +99,8 @@ the watcher mainly helps with edits made outside Neovim to top-level files.
 | --- | --- |
 | Symlinked config path | Neovim does not resolve symlinks in buffer names. `lsp.lua` and `util/cheatsheet.lua` compare paths using `fs_realpath`, so editing via `~/dotfiles/nvim/...` or `~/.config/nvim/...` behaves the same. Keep that if you edit them |
 | `lua_ls` scope | Attaches only to files inside the Neovim config. Widen `root_dir` in `plugins/lsp.lua` to use it for other Lua projects |
-| Formatters | Not auto-installed: `:MasonInstall stylua shfmt prettier ruff clang-format` as needed |
+| Formatters | Installed automatically from the `tools` field by mason-tool-installer. `rustfmt` is the exception (comes with rustup) |
+| Mason toolchains | Servers and tools install via npm, pip or go, so Node.js, Python 3 and Go must be present for the languages that need them |
 | Tree-sitter branch | Pinned to `master` while Neovim is 0.12. Works today; plan a move to `main` and its new API |
 | Format key | `<leader>cf`, deliberately not `<leader>f`, which is the Find prefix and would add a `timeoutlen` delay |
 | Which-key spec | Defined once, in `plugins/textobjects.lua`, from `config/leader_groups.lua:which_key_spec()` |

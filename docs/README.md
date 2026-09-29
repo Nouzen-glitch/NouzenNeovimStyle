@@ -11,6 +11,7 @@ Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
 | File | Read it for |
 | --- | --- |
 | [KEYBINDINGS.md](KEYBINDINGS.md) | Every custom key, grouped by task, plus a learning order |
+| [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md) | Adding a language: one line, nothing installed unless listed |
 | [COMPONENTS.md](COMPONENTS.md) | What each plugin/tool is and which file configures it |
 | [ENVIRONMENT_GUIDE.md](ENVIRONMENT_GUIDE.md) | Maintaining the config: workflow, git, cheatsheet automation, known issues |
 | [cheatsheet.md](cheatsheet.md) | **Generated** from the running editor. Never edit by hand |
@@ -20,10 +21,11 @@ Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
 - Neovim 0.11+, `git`, a C compiler and `make` (Tree-sitter, LuaSnip, fzf-native)
 - `ripgrep` (Telescope live grep), `curl`, `unzip` (Mason)
 - A Nerd Font in your terminal (icons)
+- Node.js + npm, Python 3, and optionally Go: Mason uses them to install language servers and formatters
 
 ```bash
 # Fedora
-sudo dnf install neovim git ripgrep gcc gcc-c++ make curl unzip
+sudo dnf install neovim git ripgrep gcc gcc-c++ make curl unzip nodejs npm python3 golang
 # Arch
 sudo pacman -S neovim git ripgrep base-devel curl unzip
 ```
@@ -49,7 +51,7 @@ First launch checklist:
 
 ```vim
 :Lazy          " plugins installed?
-:Mason         " clangd, basedpyright, lua_ls, rust_analyzer, bashls
+:Mason         " servers and tools from config/languages.lua
 :checkhealth
 ```
 
@@ -59,7 +61,7 @@ First launch checklist:
 ~/dotfiles/nvim/
 ├── init.lua                  entry point (keep tiny)
 ├── lazy-lock.json            pinned plugin versions (commit this)
-├── docs/                     README, KEYBINDINGS, COMPONENTS, ENVIRONMENT_GUIDE, generated cheatsheet
+├── docs/                     README, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE, generated cheatsheet
 ├── scripts/
 │   ├── install.sh            backs up old config, symlinks this dir to ~/.config/nvim
 │   └── generate-cheatsheet.sh  headless cheatsheet regeneration
@@ -69,6 +71,8 @@ First launch checklist:
     │   ├── options.lua       editor behavior, leader = Space
     │   ├── keymaps.lua       custom keybindings
     │   ├── autocmds.lua      yank highlight, diagnostic display
+    │   ├── languages.lua     default languages: LSP, parser, formatter, tools
+    │   ├── languages_local.lua  YOUR additions (optional, you create it)
     │   ├── lazy.lua          lazy.nvim bootstrap
     │   └── leader_groups.lua leader namespaces (feeds which-key and the cheatsheet)
     ├── plugins/              one spec file per concern
@@ -76,7 +80,8 @@ First launch checklist:
     │   ├── telescope.lua  terminal.lua  textobjects.lua
     │   └── treesitter.lua  ui.lua
     └── util/
-        └── cheatsheet.lua    cheatsheet generator (:Cheatsheet, :CheatsheetUpdate)
+        ├── cheatsheet.lua    cheatsheet generator (:Cheatsheet, :CheatsheetUpdate)
+        └── languages.lua     derives plugin lists from config/languages.lua
 ```
 
 Where to change things:
@@ -87,7 +92,7 @@ Where to change things:
 | Keybindings | `config/keymaps.lua` |
 | Automatic behavior | `config/autocmds.lua` |
 | Leader group labels | `config/leader_groups.lua` |
-| Languages / LSP | `plugins/lsp.lua`, `treesitter.lua`, `formatting.lua` |
+| Languages (LSP, syntax, formatting) | `config/languages_local.lua` for yours, `config/languages.lua` for defaults (see ADDING_LANGUAGES.md) |
 | Completion, snippets | `plugins/completion.lua` |
 | Appearance, explorer | `plugins/ui.lua` |
 | Terminal | `plugins/terminal.lua` |
@@ -114,7 +119,7 @@ Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 ```vim
 :checkhealth            :checkhealth vim.lsp     :checkhealth mason
 :checkhealth nvim-treesitter                     :ConformInfo
-:Lazy                   :Mason                   :LspInfo
+:Lazy                   :Mason
 ```
 
 ## Not included (yet)
