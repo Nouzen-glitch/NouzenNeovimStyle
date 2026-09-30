@@ -67,7 +67,7 @@ machine you set it on.
 
 **Releasing.** Add an entry to `CHANGELOG.md` for user-visible changes; the
 new lines are what `scripts/update.sh` shows users. Mention anything they must
-do (for example "run `:Lazy sync`") under "Upgrade notes".
+do (for example "run `:EliteLockReset`") under "Upgrade notes".
 
 ## 4. Plugins
 
@@ -124,7 +124,7 @@ It regenerates:
 - via systemd (optional, below)
 
 Headless runs only see keymaps of plugins that are loaded, so the
-"8 loaded / 27 total" count and missing lazy-loaded keys are expected. LSP
+"8 loaded / 28 total" count and missing lazy-loaded keys are expected. LSP
 clients are only listed if attached when it was generated.
 
 ### Optional: systemd watcher
@@ -150,7 +150,7 @@ the watcher mainly helps with edits made outside Neovim to top-level files.
 | --- | --- |
 | Symlinked config path | Neovim does not resolve symlinks in buffer names. `lsp.lua` and `util/cheatsheet.lua` compare paths using `fs_realpath`, so editing via `~/dotfiles/nvim/...` or `~/.config/nvim/...` behaves the same. Keep that if you edit them |
 | Alongside installs | Everything uses `stdpath()`, which follows `NVIM_APPNAME`. Never hardcode `~/.config/nvim` in Lua |
-| `lua_ls` scope | Attaches only to files inside the Neovim config. Widen `root_dir` in `plugins/lsp.lua` to use it for other Lua projects |
+| `lua_ls` scope | Attaches only to files inside the Neovim config. Widening `root_dir` means editing the shipped `plugins/lsp.lua`, so it is a maintainer change: users who do it make `scripts/update.sh` stop until they stash or commit. A `vim.lsp.config("lua_ls", ...)` in `lua/user/options.lua` is not a reliable override, because `plugins/lsp.lua` configures `lua_ls` later |
 | Enabled servers | `mason-lspconfig` enables only servers in the language table, not everything installed in Mason. To use another server, add it to `languages_local.lua` |
 | Formatters | Installed automatically from the `tools` field by mason-tool-installer. `rustfmt` is the exception (comes with rustup) |
 | Mason toolchains | Servers and tools install via npm, pip or go, so Node.js, Python 3 and Go must be present for the languages that need them |
@@ -164,6 +164,9 @@ the watcher mainly helps with edits made outside Neovim to top-level files.
 | Key tracking | Only `vim.keymap.set/del` calls made while `config.keymaps` / `user.keymaps` load are seen (not `nvim_set_keymap`, not later calls). Plugin keys set late are listed in `PLUGIN_KEYS` in `util/keyguard.lua` (currently toggleterm's `<C-\>`) |
 | Prefix delays | The *shorter* of two overlapping keys waits `timeoutlen`; `keyguard` reports both directions |
 | Terminal options | `plugins/terminal.lua` uses plain `opts`, so users rebind keys from `lua/user/plugins/`. Keep it that way |
+| Terminal-mode keys | `jk`, `<Esc>` and `<C-h/j/k/l>` are set in a `FileType toggleterm` autocmd (buffer-local), not in `config/keymaps.lua`, so other terminals (lazygit, fzf, vim) get every key. `keyguard` only tracks `config.keymaps`, so it cannot see these |
+| Keys-seen notice | `keyguard.setup()` writes `<state>/elite-keys-seen` only inside the `VimEnter` callback and only when a UI is attached, so headless runs (`smoke-test.sh`, the systemd watcher) do not use up the notice |
+| Cmdline completion | nvim-cmp loads on `InsertEnter` and `CmdlineEnter`; its `cmp.setup.cmdline` calls live in its `config`, so dropping `CmdlineEnter` breaks `:` and `/` completion until the first Insert |
 | Leader groups | `config/leader_groups.lua:all()` merges `vim.g.elite_leader_groups`; use `all()`, not `.groups`, in new code |
 | Safety copies | `scripts/user-layer.sh backup` writes to `<XDG_STATE_HOME>/elite-backups`; `util/guide.lua:backup_dir()` and `elite/health.lua` assume that same path |
 | Hand-cloned configs | No install record means `util/welcome.lua` shows a one-time notice (marker file `elite-manual-notice-shown`) |

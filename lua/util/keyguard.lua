@@ -238,11 +238,15 @@ function M.setup()
     if sig == last then
         return
     end
-    pcall(function()
-        vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
-        vim.fn.writefile(vim.split(sig, "\n"), path)
-    end)
-    if sig ~= "" then
+    local function remember()
+        pcall(function()
+            vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+            vim.fn.writefile(vim.split(sig, "\n"), path)
+        end)
+    end
+    if sig == "" then
+        remember() -- conflicts were cleared; nothing to show
+    else
         local n = #M.overrides_grouped() + #M.removed_grouped()
         local msg = string.format(
             "Elite: your keymaps replace or remove %d shipped key(s)%s. Run :EliteKeys to review.",
@@ -250,6 +254,11 @@ function M.setup()
         vim.api.nvim_create_autocmd("VimEnter", {
             once = true,
             callback = function()
+                -- Headless runs (smoke test, cheatsheet watcher) must not use up the notice.
+                if #vim.api.nvim_list_uis() == 0 then
+                    return
+                end
+                remember()
                 vim.defer_fn(function() vim.notify(msg, vim.log.levels.WARN) end, 600)
             end,
         })

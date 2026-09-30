@@ -1,5 +1,6 @@
 # Your personal layer. Not part of the project, so `git pull` never conflicts.
 lua/config/languages_local.lua
+lua/config/languages_local.lua.bak.*
 
 lua/user/*
 !lua/user/*.example

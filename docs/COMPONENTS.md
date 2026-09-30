@@ -37,7 +37,8 @@ lockfile, `:EliteLockReset`), `elite/health.lua` (`:checkhealth elite`).
 `util/guide.lua` (`:EliteHelp`, `:EliteTutor`, `:EliteEdit`, `:EliteBackup`).
 
 Scripts (`scripts/`): `install.sh`, `uninstall.sh`, `update.sh`,
-`user-layer.sh`, `generate-cheatsheet.sh`. See [INSTALL.md](INSTALL.md).
+`user-layer.sh`, `generate-cheatsheet.sh`, `smoke-test.sh`. `systemd/` holds optional
+cheatsheet watcher units (ENVIRONMENT_GUIDE.md, section 7). See [INSTALL.md](INSTALL.md).
 
 ## Language support
 

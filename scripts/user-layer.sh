@@ -13,6 +13,7 @@
 # install.sh and update.sh run `backup` for you before they change anything.
 set -euo pipefail
 
+CALLER_PWD="$PWD"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 cd "$SOURCE_DIR"
 
@@ -21,6 +22,8 @@ KEEP=10
 
 say() { printf '%s\n' "$*"; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+# Paths typed by the user are relative to where they ran the script, not the repo.
+abspath() { case "$1" in /*) printf '%s\n' "$1" ;; *) printf '%s/%s\n' "$CALLER_PWD" "$1" ;; esac; }
 
 collect() {
     {
@@ -29,7 +32,7 @@ collect() {
     } | sort
 }
 
-usage() { sed -n '2,14p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 
 cmd="${1:-}"
 [[ -n "$cmd" ]] || { usage; exit 1; }
@@ -49,7 +52,7 @@ case "$cmd" in
     export)
         files="$(collect)"
         [[ -n "$files" ]] || die "Nothing to export: no personal files found."
-        out="${1:-$PWD/elite-user-layer-$(date +%Y%m%d).tar.gz}"
+        out="$(abspath "${1:-elite-user-layer-$(date +%Y%m%d).tar.gz}")"
         printf '%s\n' "$files" | tar czf "$out" -T -
         say "Exported to: $out"
         printf '%s\n' "$files" | sed 's/^/  /'
@@ -60,6 +63,7 @@ case "$cmd" in
 
     import)
         archive="${1:-}"
+        [[ -z "$archive" ]] || archive="$(abspath "$archive")"
         [[ -n "$archive" && -f "$archive" ]] || die "Give the archive to import: scripts/user-layer.sh import FILE"
         entries="$(tar tzf "$archive")" || die "Not a valid archive: $archive"
         while IFS= read -r e; do

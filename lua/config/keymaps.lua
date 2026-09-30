@@ -13,10 +13,10 @@ map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 -- Opt out in lua/user/options.lua:  vim.g.elite_disable_arrows = false
 if vim.g.elite_disable_arrows ~= false then
     for _, mode in ipairs({ "n", "i", "v" }) do
-        map(mode, "<Up>", "<Nop>")
-        map(mode, "<Down>", "<Nop>")
-        map(mode, "<Left>", "<Nop>")
-        map(mode, "<Right>", "<Nop>")
+        map(mode, "<Up>", "<Nop>", { desc = "Arrow key disabled (learn hjkl)" })
+        map(mode, "<Down>", "<Nop>", { desc = "Arrow key disabled (learn hjkl)" })
+        map(mode, "<Left>", "<Nop>", { desc = "Arrow key disabled (learn hjkl)" })
+        map(mode, "<Right>", "<Nop>", { desc = "Arrow key disabled (learn hjkl)" })
     end
 end
 
@@ -139,4 +139,5 @@ map("n", "<leader>hp", function() require("gitsigns").preview_hunk() end, { desc
 -- Terminal
 -- ============================================================================
 
-map("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+-- Terminal-mode keys (jk, <Esc>, <C-h/j/k/l>) are set in plugins/terminal.lua,
+-- for toggleterm buffers only, so they never get in the way of TUIs.

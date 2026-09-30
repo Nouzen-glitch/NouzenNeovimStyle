@@ -24,6 +24,9 @@ the shipped keys.
   waits `timeoutlen` (400 ms) to see whether you type more. Avoid prefixes.
 - **Plugin keys can win.** `<C-\>` is set by toggleterm after your keymaps load;
   rebind it through toggleterm's `opts` ([MIGRATING.md](MIGRATING.md), section 4).
+  Likewise `jk`, `<Esc>` and `<C-h/j/k/l>` in Terminal mode are set per toggleterm
+  buffer, so a global Terminal-mode map of yours on those keys is shadowed there
+  (and `:EliteKeys` does not report it). Other terminals are not affected.
 - **Your own prefix labels.** `vim.g.elite_leader_groups = { g = "Git" }` in
   `lua/user/options.lua` names a new prefix in which-key and the cheatsheet.
 
@@ -35,7 +38,7 @@ anything starting with `<leader>f`, `<leader>w` or `<leader>c`.
 
 | Key | Mode | Action |
 | --- | --- | --- |
-| `jk` | i, t | Leave Insert / Terminal mode |
+| `jk` | i, t | Leave Insert mode; leave Terminal mode in the toggleterm terminal (other terminals keep `jk` for the program) |
 | Arrow keys | n, i, v | Disabled (`<Nop>`). Opt out: `vim.g.elite_disable_arrows = false` in `lua/user/options.lua` |
 | `j` / `k` | n | Move by display line (wrapped lines) |
 | `n` / `N` | n | Next / previous search result, centered |
@@ -75,6 +78,10 @@ Neovim 0.11+ also provides defaults: `grn` rename, `gra` code action, `grr`
 references, `gri` implementation, `grt` type definition, `gO` symbols,
 `<C-s>` (insert/select) signature help.
 
+Because `gr` is also mapped here, a lone `gr` waits `timeoutlen` (400 ms) in case
+you are typing one of the longer defaults (`grr`, `gra`, `grn`, ...). `grr` works
+at full speed.
+
 ## Diagnostics
 
 | Key | Action |
@@ -97,6 +104,7 @@ references, `gri` implementation, `grt` type definition, `gO` symbols,
 | `<leader>fc` | Commands |
 | `<leader>fk` | Keymaps |
 | `<leader>fC` | Open generated cheatsheet |
+| `<leader>fi` | Elite guide (`:EliteHelp`) |
 | `<leader>?` | which-key: all keybindings |
 
 ## Explorer, formatting, git
@@ -140,7 +148,7 @@ motion/selection comments a range.
 ## Leader namespaces
 
 `f` Find, `w` Windows, `x` Diagnostics list, `h` Git hunks,
-`b` Buffers, `e` Explorer, `c` Code (actions, format), `d` Diagnostic details,
+`b` Buffers, `c` Code (actions, format), `d` Diagnostic details (and `<leader>ds` document symbols),
 `i` Inlay hints, `r` Rename. Press `<leader>` and wait for which-key.
 
 ## Learning order

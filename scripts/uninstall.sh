@@ -30,7 +30,7 @@ while (($#)); do
         --appname) shift; [[ $# -gt 0 ]] || die "--appname needs a value"; APPNAME="$1" ;;
         --dry-run) DRY_RUN=1 ;;
         -y|--yes)  ASSUME_YES=1 ;;
-        -h|--help) sed -n '2,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,8p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *)         die "Unknown option: $1" ;;
     esac
     shift
@@ -119,13 +119,13 @@ fi
 run rm "$TARGET"
 if [[ -n "$BACKUP" ]]; then
     run mv "$BACKUP" "$TARGET"
-    say "Restored: $TARGET"
+    ((DRY_RUN)) || say "Restored: $TARGET"
 fi
 
 LAUNCHER="$BIN_DIR/nvim-$APPNAME"
 if [[ -f "$LAUNCHER" ]] && grep -qF "$LAUNCHER_MARK" "$LAUNCHER" 2>/dev/null; then
     run rm "$LAUNCHER"
-    say "Removed launcher: $LAUNCHER"
+    ((DRY_RUN)) || say "Removed launcher: $LAUNCHER"
 fi
 
 run rm -f "$INFO_FILE" "$INFO_FILE.shown"

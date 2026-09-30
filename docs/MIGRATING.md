@@ -73,7 +73,9 @@ one-time notice at startup. Also:
 - A key that is the start of another (yours `<leader>f`, shipped `<leader>ff`)
   makes the *shorter* key wait `timeoutlen` (400 ms).
 - Plugins that set keys late win over yours (`<C-\>` from toggleterm); change
-  those through the plugin's `opts` (section 4).
+  those through the plugin's `opts` (section 4). Terminal-mode `jk`, `<Esc>` and
+  `<C-h/j/k/l>` are also set late, per toggleterm buffer, so your own global
+  Terminal-mode maps on those keys are shadowed there and not reported by `:EliteKeys`.
 - Check first: `jk`, `<C-s>`, `<C-h/j/k/l>`, `H`, `L`, `K`, `gd`, `gr`, `<Esc>`,
   `<C-\>`, and the `<leader>f`, `<leader>w`, `<leader>c` prefixes.
 - Use `vim.keymap.set`; other APIs are not checked.
@@ -104,6 +106,24 @@ keymaps, so a keymap of yours cannot override it):
 
 ```lua
 { "akinsho/toggleterm.nvim", opts = { open_mapping = [[<C-t>]] } },
+```
+
+### Common tweaks (no shipped file needs editing)
+
+Turn off format on save (`<leader>cf` still formats on demand):
+
+```lua
+-- lua/user/plugins/mine.lua
+return {
+    { "stevearc/conform.nvim", opts = { format_on_save = false } },
+}
+```
+
+Per-server LSP settings, or a server that is not in Mason, go in
+`lua/user/options.lua` (core Neovim API, works before plugins load):
+
+```lua
+vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })
 ```
 
 ## 5. Keeping your layer safe and portable

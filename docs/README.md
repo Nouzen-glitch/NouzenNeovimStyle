@@ -28,12 +28,13 @@ The live cheatsheet is **generated** from the running editor (`<leader>fC` or
 - `ripgrep` (Telescope live grep), `curl`, `unzip` (Mason)
 - A Nerd Font in your terminal (icons)
 - Node.js + npm, Python 3, and optionally Go: Mason uses them to install language servers and formatters
+- `rustup` if you use Rust: `rustfmt` comes with it (it is not a Mason package)
 
 ```bash
 # Fedora
 sudo dnf install neovim git ripgrep gcc gcc-c++ make curl unzip nodejs npm python3 golang
 # Arch
-sudo pacman -S neovim git ripgrep base-devel curl unzip
+sudo pacman -S neovim git ripgrep base-devel curl unzip nodejs npm python go
 ```
 
 ## Install
@@ -88,7 +89,7 @@ First launch checklist:
 ├── lazy-lock.json            plugin versions the maintainer tested (seeds each user's personal copy)
 ├── CHANGELOG.md              what changed, newest first
 ├── .gitignore                keeps your personal layer out of git
-├── docs/                     README, INSTALL, MIGRATING, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE
+├── docs/                     README, GETTING_STARTED, INSTALL, MIGRATING, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE
 ├── scripts/
 │   ├── install.sh            alongside or replace install, with backup and dry-run
 │   ├── uninstall.sh          removes the link, restores your backup
@@ -137,6 +138,12 @@ Where to change things:
 | Completion, snippets | `plugins/completion.lua` |
 | Appearance, explorer | `plugins/ui.lua` |
 | Terminal | `plugins/terminal.lua` |
+| LSP servers, Mason tools | `plugins/lsp.lua` (server list comes from the language table) |
+| Formatting, format on save | `plugins/formatting.lua` |
+| Fuzzy finder | `plugins/telescope.lua` |
+| Syntax highlighting | `plugins/treesitter.lua` |
+| Git signs | `plugins/git.lua` |
+| Text objects, auto-pairs, which-key | `plugins/textobjects.lua` |
 
 ## Day-one essentials
 

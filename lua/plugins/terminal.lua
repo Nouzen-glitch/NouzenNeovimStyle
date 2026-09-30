@@ -16,12 +16,14 @@ return {
     config = function(_, opts)
         require("toggleterm").setup(opts)
 
-        -- Keys that only exist inside terminal buffers.
-        vim.api.nvim_create_autocmd("TermOpen", {
+        -- Keys that only exist inside toggleterm buffers. Other terminals
+        -- (:terminal running lazygit, fzf, vim...) keep every key for the program.
+        vim.api.nvim_create_autocmd("FileType", {
             group = vim.api.nvim_create_augroup("EliteTerminal", { clear = true }),
-            pattern = "term://*",
+            pattern = "toggleterm",
             callback = function(args)
                 local o = { buffer = args.buf }
+                vim.keymap.set("t", "jk", [[<C-\><C-n>]], { buffer = args.buf, desc = "Exit terminal mode" })
                 -- Esc switches to Normal mode (scroll, search, window navigation).
                 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], o)
                 -- Move out of the terminal window.

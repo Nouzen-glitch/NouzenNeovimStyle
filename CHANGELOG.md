@@ -35,8 +35,17 @@ Newest first. `scripts/update.sh` prints the new entries when you update.
 - The installer no longer reports Neovim's own freshly created state folder as "old data".
 - lazy.nvim no longer prints an error when `lua/user/plugins/` is empty.
 
+### Fixed (follow-up)
+- `scripts/user-layer.sh`: relative paths (`export mine.tgz`, `import mine.tgz`, and the default archive name) now resolve from the folder you ran it in, not the repo. This also fixes `:EliteBackup name.tgz`.
+- `:` and `/` completion works before you first enter Insert mode (nvim-cmp now also loads on `CmdlineEnter`).
+- The "keys replaced" startup notice is no longer marked as seen by headless runs (smoke test, cheatsheet watcher).
+- Terminal keys (`jk`, `<Esc>`, `<C-h/j/k/l>`) apply only to the toggleterm terminal, so TUIs such as lazygit or fzf keep them.
+- `--help` in `update.sh`, `uninstall.sh` and `user-layer.sh` no longer prints the `set -euo pipefail` line; `uninstall.sh --dry-run` no longer claims it restored or removed anything; `smoke-test.sh` detects an alongside install.
+- Docs: terminal-mode key caveats, `lua_ls` override note and new maintainer gotchas.
+- Arrow-key `<Nop>` maps have a `desc`; `<leader>e` is no longer also declared as a which-key group.
+
 ### Upgrade notes
 - Nothing is required. Run `:EliteHelp` once to see what is new, and `:checkhealth elite` to see your safety copies and key conflicts.
 - Delete `docs/cheatsheet.md` if you still have it (it is no longer generated there).
-- Run `:Lazy sync` once so `mini.pairs` installs.
+- Restart Neovim: `mini.pairs` installs automatically (watch `:Lazy`).
 - If you commit `lazy-lock.json` yourself, add `vim.g.elite_lockfile_in_repo = true` to `lua/user/options.lua`.

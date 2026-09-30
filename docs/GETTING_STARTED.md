@@ -19,6 +19,10 @@ Add `--dry-run` first to see what it would do.
 **Keep the folder you cloned into.** The config is a link to it, and your
 personal files live inside it.
 
+Check the requirements in [README.md](README.md) first (Neovim 0.11+, git, a C
+compiler, ripgrep, Node.js and npm, Python 3, a Nerd Font). `:checkhealth elite`
+lists whatever is missing.
+
 ## 2. First launch
 
 Start Neovim (`nvim`, or `nvim-elite` for an alongside install). Plugins install

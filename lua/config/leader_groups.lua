@@ -6,7 +6,6 @@ M.groups = {
     { key = "x", label = "Diagnostics" },
     { key = "h", label = "Git Hunks" },
     { key = "b", label = "Buffers" },
-    { key = "e", label = "Explorer" },
     { key = "c", label = "Code / LSP" },
     { key = "d", label = "Diagnostic Details" },
     { key = "i", label = "Inlay Hints" },

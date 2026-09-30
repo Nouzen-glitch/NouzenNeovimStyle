@@ -18,7 +18,7 @@ die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 while (($#)); do
     case "$1" in
         --check|--dry-run) CHECK_ONLY=1 ;;
-        -h|--help)         sed -n '2,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help)         sed -n '2,9p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *)                 die "Unknown option: $1 (try --help)" ;;
     esac
     shift

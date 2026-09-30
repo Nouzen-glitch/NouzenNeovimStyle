@@ -4,6 +4,19 @@
 #   scripts/smoke-test.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
+REPO="$(pwd -P)"
+
+# Alongside install: use it unless the caller already chose one.
+if [[ -z "${NVIM_APPNAME:-}" ]]; then
+    config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    for name in elite nvim; do
+        link="$config_home/$name"
+        if [[ -e "$link" && "$(readlink -f "$link")" == "$REPO" ]]; then
+            [[ "$name" == "nvim" ]] || export NVIM_APPNAME="$name"
+            break
+        fi
+    done
+fi
 
 nvim --headless \
   "+lua for _, m in ipairs({'util.keyguard','util.guide','util.welcome','util.cheatsheet','config.leader_groups','elite.health'}) do assert(pcall(require, m), 'failed to load ' .. m) end" \

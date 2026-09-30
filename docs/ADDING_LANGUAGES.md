@@ -118,13 +118,13 @@ Also try `K`, `gd`, `<leader>cf` and completion.
   does not delete anything. Run `:Mason` and press `X` on the package to remove
   it from disk. Servers that are installed in Mason but not in the table stay
   off.
-- **Server settings:** in `plugins/lsp.lua`, in the lspconfig `config`
-  function: `vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })`
+- **Server settings:** put `vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })`
+  in `lua/user/options.lua` (yours, survives updates). Editing `plugins/lsp.lua` makes `scripts/update.sh` stop.
 
 ## 7. Special cases
 
-**Server not in Mason.** Install it yourself, then add at the end of the
-`config` function in `plugins/lsp.lua`:
+**Server not in Mason.** Install it yourself, then add this to
+`lua/user/options.lua` (not `plugins/lsp.lua`: editing shipped files blocks updates):
 
 ```lua
 vim.lsp.config("myserver", {

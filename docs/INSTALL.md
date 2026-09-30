@@ -4,8 +4,8 @@ Everything about putting this config on a machine, keeping it current, and
 taking it off again. Customizing it and bringing your own config along is in
 [MIGRATING.md](MIGRATING.md).
 
-Supported: Linux (developed on Fedora). Windows is not supported yet; the
-scripts rely on GNU tools.
+Supported: Linux (developed on Fedora). Windows is not supported yet and macOS is untested: the
+scripts rely on GNU tools (`date -Is`).
 
 ## 1. Quick start
 
@@ -47,7 +47,7 @@ before deleting or re-cloning it.
 
 Alongside mode uses Neovim's `NVIM_APPNAME` setting, which swaps the folder
 name `nvim` for another in all four places, so the two setups cannot interfere.
-`nvim-elite` is a two-line launcher the installer writes to `~/.local/bin`.
+`nvim-elite` is a tiny launcher script the installer writes to `~/.local/bin`.
 
 Config, data, state and cache honor `XDG_CONFIG_HOME`, `XDG_DATA_HOME`,
 `XDG_STATE_HOME` and `XDG_CACHE_HOME` if you have set them. The launcher folder
@@ -128,6 +128,10 @@ What it does:
 4. Removes `~/.local/bin/nvim-<name>` if the installer created it.
 5. Deletes the install record.
 
+It handles **one install per run**. With both an alongside and a replace install
+(scenario D), run it once with `--appname elite` and once with `--appname nvim`;
+without `--appname` it stops at the first one it finds (`elite`, then `nvim`).
+
 It does **not** delete plugin data. For an alongside install it lists the
 `elite` data, state and cache folders so you can remove them for a clean
 slate. For a replace install those folders are shared with your restored
@@ -179,7 +183,7 @@ scripts/user-layer.sh backups
 | Command | What it does |
 | --- | --- |
 | `list` | Shows which personal files exist. |
-| `export [FILE]` | Packs `lua/user/*.lua`, `lua/user/plugins/*.lua` and `lua/config/languages_local.lua` into a `.tar.gz` (default `./elite-user-layer-<date>.tar.gz`). The `*.example` files are not included. Check for secrets before sharing it. |
+| `export [FILE]` | Packs every file under `lua/user/` (except `*.example`, `.gitkeep`, `*.bak.*`) and `lua/config/languages_local.lua` into a `.tar.gz` (default `./elite-user-layer-<date>.tar.gz`). The `*.example` files are not included. Check for secrets before sharing it. |
 | `import FILE` | Unpacks onto this machine. Any file it would overwrite is first renamed to `<name>.bak.<timestamp>`. It refuses archives containing anything outside `lua/user/` and `languages_local.lua`, or unsafe paths. |
 | `backup` | Quiet safety copy to `~/.local/state/elite-backups/user-layer-<timestamp>.tar.gz`; the newest 10 are kept. Does nothing if you have no personal files. Run automatically by `install.sh` and `update.sh`. |
 | `backups` | Lists the safety copies, newest first. Restore one with `import`. |
@@ -280,7 +284,7 @@ $ scripts/uninstall.sh
 
 Replace mode: the link is removed and your old config is moved back. Alongside
 mode: the link and the `nvim-elite` launcher are removed; your `nvim` was never
-touched. Plugin data is left and listed (section 3).
+touched. Plugin data is left and listed (section 4).
 
 ### I. Reinstalling Neovim or the whole OS
 
