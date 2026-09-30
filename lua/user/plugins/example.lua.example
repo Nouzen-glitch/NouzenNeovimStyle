@@ -1,5 +1,5 @@
--- Copy to lua/user/plugins/anything.lua. Every .lua file in this folder is a
--- lazy.nvim spec file, loaded after the shipped plugins.
+-- Copy to lua/user/plugins/anything.lua (or run :EliteEdit plugins). Every .lua
+-- file in this folder is a lazy.nvim spec file, loaded after the shipped plugins.
 --
 -- lazy.nvim merges specs that name the same plugin, and merges `opts` tables,
 -- so you can tweak a shipped plugin without editing its file.
@@ -10,6 +10,10 @@ return {
 
     -- Change a shipped plugin's options:
     -- { "nvim-telescope/telescope.nvim", opts = { defaults = { layout_strategy = "vertical" } } },
+
+    -- Rebind the terminal toggle (default <C-\>; toggleterm sets its key late,
+    -- so this is the only way to change it):
+    -- { "akinsho/toggleterm.nvim", opts = { open_mapping = [[<C-t>]] } },
 
     -- Turn a shipped plugin off:
     -- { "folke/trouble.nvim", enabled = false },

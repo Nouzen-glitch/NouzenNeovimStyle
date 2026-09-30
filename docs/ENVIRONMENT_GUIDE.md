@@ -33,14 +33,26 @@ init.lua
  │                   imported once it contains a .lua file)
  ├─ util.cheatsheet.setup()
  ├─ util.lockfile.setup()      :EliteLockReset
- └─ util.welcome.setup()       first-run window, :EliteInfo
+ ├─ util.welcome.setup()       first-run window, :EliteInfo
+ ├─ util.guide.setup()         :EliteHelp, :EliteTutor, :EliteEdit, :EliteBackup
+ └─ util.keyguard.setup()      :EliteKeys, one-time "keys replaced" notice
 ```
+
+`init.lua` runs `config.keymaps` and `user.keymaps` through
+`util.keyguard.track_shipped()` / `track_user()`. While they load,
+`vim.keymap.set` and `vim.keymap.del` are wrapped (the real call always still
+runs) so shipped keys, replacements, removals and prefix clashes are recorded.
+The result feeds `:EliteKeys`, `:checkhealth elite`, the cheatsheet and a
+one-time startup notice (state file `elite-keys-seen`).
 
 ## 3. Everyday workflow
 
 1. Pick the file (table in README).
 2. Edit, restart Neovim.
-3. Test. If good, `git add . && git commit -m "..."`. If broken, `git restore`.
+3. Test: `scripts/smoke-test.sh` loads every Elite module headless and prints
+   the key-conflict report (use `NVIM_APPNAME=elite` for an alongside install).
+   Then try the change for real. If good, `git add . && git commit -m "..."`.
+   If broken, `git restore`.
 
 Personal files under `lua/user/` and `lua/config/languages_local.lua` are
 gitignored.
@@ -89,6 +101,10 @@ automatically. Full guide: [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md).
 | `:ConformInfo` | Formatter status |
 | `:TSUpdate` | Update parsers |
 | `:checkhealth` | Diagnose everything |
+| `:EliteHelp` / `:EliteTutor` | One-screen guide / practice tutorial |
+| `:EliteEdit {options,keymaps,plugins,languages}` | Create and open a personal file |
+| `:EliteKeys` | Shipped keys the user's keymaps replaced |
+| `:EliteBackup [file]` | Export personal files |
 
 ## 7. Cheatsheet automation
 
@@ -145,6 +161,12 @@ the watcher mainly helps with edits made outside Neovim to top-level files.
 | Cheatsheet source | Started once, from `init.lua`. Do not add a second `setup()` call |
 | User layer | `lua/user/*` is gitignored except the `*.example` files and `plugins/.gitkeep`. `config/lazy.lua` imports `user.plugins` only when that folder has a `.lua` file, because lazy.nvim prints an error for an imported folder with no specs |
 | Lockfile | Personal copy by default (`util/lockfile.lua`). `vim.g.elite_lockfile_in_repo` must be set in `lua/user/options.lua`, which loads before lazy starts |
+| Key tracking | Only `vim.keymap.set/del` calls made while `config.keymaps` / `user.keymaps` load are seen (not `nvim_set_keymap`, not later calls). Plugin keys set late are listed in `PLUGIN_KEYS` in `util/keyguard.lua` (currently toggleterm's `<C-\>`) |
+| Prefix delays | The *shorter* of two overlapping keys waits `timeoutlen`; `keyguard` reports both directions |
+| Terminal options | `plugins/terminal.lua` uses plain `opts`, so users rebind keys from `lua/user/plugins/`. Keep it that way |
+| Leader groups | `config/leader_groups.lua:all()` merges `vim.g.elite_leader_groups`; use `all()`, not `.groups`, in new code |
+| Safety copies | `scripts/user-layer.sh backup` writes to `<XDG_STATE_HOME>/elite-backups`; `util/guide.lua:backup_dir()` and `elite/health.lua` assume that same path |
+| Hand-cloned configs | No install record means `util/welcome.lua` shows a one-time notice (marker file `elite-manual-notice-shown`) |
 | Installer record | `scripts/install.sh` writes `<state>/elite-install-info`; `util/welcome.lua` and `scripts/uninstall.sh` read it. Keep the `key=value` format in sync if you change either side |
 
 ## 9. Mental model

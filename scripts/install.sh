@@ -182,6 +182,17 @@ if [[ "$MODE" == "replace" && $ALREADY_LINKED -eq 0 ]]; then
     fi
 fi
 
+# --- Safety copy of your personal files -------------------------------------
+# lua/user/ is not in git. Save a copy before anything is linked or moved.
+
+if [[ -x "$SOURCE_DIR/scripts/user-layer.sh" ]]; then
+    if ((DRY_RUN)); then
+        say "  [dry-run] would save a safety copy of your personal files (if you have any)"
+    else
+        "$SOURCE_DIR/scripts/user-layer.sh" backup || true
+    fi
+fi
+
 # --- Link (with backup) -----------------------------------------------------
 
 if ((ALREADY_LINKED == 0)); then
@@ -272,6 +283,10 @@ say " Start it : $START_CMD   (first launch installs plugins; give it a minute)"
 say " Verify   : :checkhealth elite"
 say " Update   : $SOURCE_DIR/scripts/update.sh"
 say " Undo     : $SOURCE_DIR/scripts/uninstall.sh"
+say " Guide    : :EliteHelp inside Neovim (one screen); :EliteTutor to practice"
+say " Keep     : $SOURCE_DIR - the config is a link to this folder and your personal"
+say "            files (lua/user/) live inside it. Save them before deleting or"
+say "            re-cloning it:  $SOURCE_DIR/scripts/user-layer.sh export"
 say "$line"
 
 if [[ -n "$LAUNCHER" ]]; then

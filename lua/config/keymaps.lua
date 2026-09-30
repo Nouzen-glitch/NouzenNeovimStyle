@@ -103,6 +103,7 @@ map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
 map("n", "<leader>fc", "<cmd>Telescope commands<cr>", { desc = "Find commands" })
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Find keymaps" })
 map("n", "<leader>fC", "<cmd>Cheatsheet<cr>", { desc = "Open generated cheatsheet" })
+map("n", "<leader>fi", "<cmd>EliteHelp<cr>", { desc = "Elite guide: what you can do" })
 
 -- Discover all globally registered keybindings with which-key.
 map("n", "<leader>?", function()

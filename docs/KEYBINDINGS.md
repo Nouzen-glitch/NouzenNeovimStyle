@@ -6,6 +6,31 @@ defaults) use `<leader>?`, `<leader>fk`, or the generated cheatsheet
 (`<leader>fC` / `:Cheatsheet`). Your own bindings go in `lua/user/keymaps.lua`
 ([MIGRATING.md](MIGRATING.md)).
 
+## Your own keys
+
+They go in `lua/user/keymaps.lua` (`:EliteEdit keymaps` creates and opens it).
+Give every mapping a `desc`: that is what shows in `<leader>?`, `<leader>fk` and
+the generated cheatsheet (which covers normal, visual, operator-pending, insert,
+terminal and command-line maps, plus buffer-local maps). This file lists only
+the shipped keys.
+
+- **Same key, yours wins.** It replaces the shipped one; the action can still be
+  run as a command (`<leader>fc`) or moved to another key in the same file.
+- **You are told.** `:EliteKeys` and `:checkhealth elite` list every shipped key
+  you replaced, removed or shadowed, and Neovim shows a one-time notice at
+  startup whenever that list changes.
+- **Prefix delay.** If one of your keys is the start of a longer shipped key
+  (yours `<leader>f`, shipped `<leader>ff`), or extends one, the *shorter* key
+  waits `timeoutlen` (400 ms) to see whether you type more. Avoid prefixes.
+- **Plugin keys can win.** `<C-\>` is set by toggleterm after your keymaps load;
+  rebind it through toggleterm's `opts` ([MIGRATING.md](MIGRATING.md), section 4).
+- **Your own prefix labels.** `vim.g.elite_leader_groups = { g = "Git" }` in
+  `lua/user/options.lua` names a new prefix in which-key and the cheatsheet.
+
+Keys worth checking before you override them: `jk`, `<C-s>`, `<C-h/j/k/l>`,
+`<C-d>`, `<C-u>`, `H`, `L`, `K`, `gd`, `gr`, `n`, `N`, `<Esc>`, `<C-\>`, and
+anything starting with `<leader>f`, `<leader>w` or `<leader>c`.
+
 ## Fundamentals
 
 | Key | Mode | Action |

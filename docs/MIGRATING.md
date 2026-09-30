@@ -22,6 +22,8 @@ error message naming the file and line, and the rest of the config still
 loads. `lua/user/plugins/` is only used once it contains a `.lua` file.
 
 Check what you have with `scripts/user-layer.sh list` or `:checkhealth elite`.
+`:EliteEdit options|keymaps|plugins|languages` creates each file from its example
+and opens it.
 
 ## 2. Bringing your old config over
 
@@ -54,10 +56,27 @@ they are read while the config loads.
 | Setting | Default | Effect |
 | --- | --- | --- |
 | `vim.g.elite_disable_arrows = false` | arrows disabled | Re-enable the arrow keys in normal, insert and visual mode. |
+| `vim.g.elite_leader_groups = { g = "Git" }` | none | Names for your own `<leader>` prefixes in which-key and the cheatsheet. |
+| `vim.g.elite_hide_notices = true` | notices shown | Hide the one-time welcome notice for hand-cloned configs. |
 | `vim.g.elite_lockfile_in_repo = true` | personal lockfile | Track plugin versions in the repo's `lazy-lock.json` instead of a personal copy. For maintainers who commit it. See [INSTALL.md](INSTALL.md) section 8. |
 
 Everything else is an ordinary Neovim option, for example
 `vim.opt.shiftwidth = 2`.
+
+### Before you override a key
+
+If your key matches a shipped key (same mode), yours wins and the shipped one
+stops working on that key (its action is still a command: `<leader>fc`).
+`:EliteKeys` and `:checkhealth elite` list every such key, and you get a
+one-time notice at startup. Also:
+
+- A key that is the start of another (yours `<leader>f`, shipped `<leader>ff`)
+  makes the *shorter* key wait `timeoutlen` (400 ms).
+- Plugins that set keys late win over yours (`<C-\>` from toggleterm); change
+  those through the plugin's `opts` (section 4).
+- Check first: `jk`, `<C-s>`, `<C-h/j/k/l>`, `H`, `L`, `K`, `gd`, `gr`, `<Esc>`,
+  `<C-\>`, and the `<leader>f`, `<leader>w`, `<leader>c` prefixes.
+- Use `vim.keymap.set`; other APIs are not checked.
 
 ## 4. Changing shipped plugins without editing them
 
@@ -80,6 +99,13 @@ return {
 
 `lua/user/plugins/example.lua.example` has the same snippets to copy from.
 
+Example: rebind the terminal key (toggleterm sets `<C-\>` itself, after your
+keymaps, so a keymap of yours cannot override it):
+
+```lua
+{ "akinsho/toggleterm.nvim", opts = { open_mapping = [[<C-t>]] } },
+```
+
 ## 5. Keeping your layer safe and portable
 
 Your personal files are not in the project's git history. To back them up or
@@ -89,6 +115,12 @@ move them to another machine:
 scripts/user-layer.sh export ~/elite-user.tar.gz      # on the old machine
 scripts/user-layer.sh import ~/elite-user.tar.gz      # on the new one
 ```
+
+`:EliteBackup` does the same export from inside Neovim (to `~/elite-user-layer-<date>.tar.gz`).
+`scripts/install.sh` and `scripts/update.sh` also save a safety copy to
+`~/.local/state/elite-backups/` before they change anything (newest 10 are
+kept; `scripts/user-layer.sh backups` lists them). Never delete or re-clone the
+repo folder without exporting first: a fresh clone does not contain `lua/user/`.
 
 Details and safety checks are in [INSTALL.md](INSTALL.md), section 6. If you
 prefer git, you can also fork the repo and remove the personal-file lines from
@@ -102,3 +134,8 @@ prefer git, you can also fork the repo and remove the personal-file lines from
 | `:EliteInfo` | How this config was installed and where any backup is |
 | `:EliteLockReset` | Adopt the plugin versions shipped with the config |
 | `:Cheatsheet` / `:CheatsheetUpdate` | Open / regenerate the live cheatsheet |
+| `:EliteHelp` (`<leader>fi`) | One-screen guide: what you can do and should do |
+| `:EliteTutor` | Short practice tutorial |
+| `:EliteEdit {options,keymaps,plugins,languages}` | Create (from the example) and open a personal file |
+| `:EliteKeys` | Shipped keys your keymaps replaced, removed or delayed |
+| `:EliteBackup [file]` | Export your personal files (they are not in git) |

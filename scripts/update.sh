@@ -84,6 +84,11 @@ if ((local_only > 0)); then
     die "You have $local_only local commit(s) that are not on the remote, so a fast-forward is impossible. Run: git pull --rebase"
 fi
 
+# Your personal files are not in git; keep a safety copy anyway.
+if [[ -x "$SOURCE_DIR/scripts/user-layer.sh" ]]; then
+    "$SOURCE_DIR/scripts/user-layer.sh" backup || true
+fi
+
 git pull --ff-only --quiet || die "Could not fast-forward. Run: git pull --rebase"
 
 say
@@ -96,3 +101,4 @@ if ((lock_changed)); then
     say "     then :Lazy restore. (Skip this to keep the versions you have.)"
 fi
 say "  Verify with :checkhealth elite"
+say "  Tip: :EliteHelp shows what you can do; :EliteKeys lists shipped keys your keymaps replace."

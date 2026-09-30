@@ -1,13 +1,36 @@
 local M = {}
 
 local function esc(value)
-    return tostring(value or ""):gsub("|", "\\|"):gsub("\n", " ")
+    return (tostring(value or ""):gsub("|", "\\|"):gsub("\n", " "))
+end
+
+-- Every mode a user can map in. "v" maps are stored as x + s, and plain `:map`
+-- maps show up under n/x/s/o, so results are de-duplicated below.
+local MODES = { "n", "x", "s", "o", "i", "t", "c" }
+
+local function label(map)
+    if map.desc and map.desc ~= "" then
+        return map.desc
+    end
+    if map.rhs == "<Nop>" then
+        return "(disabled)"
+    end
+    return ""
 end
 
 local function get_keymaps()
-    local ok, maps = pcall(vim.api.nvim_get_keymap, "")
-    if not ok then
-        return {}
+    local seen, maps = {}, {}
+    for _, mode in ipairs(MODES) do
+        local ok, list = pcall(vim.api.nvim_get_keymap, mode)
+        if ok then
+            for _, map in ipairs(list) do
+                local id = table.concat({ map.mode or "", map.lhsraw or map.lhs or "", map.desc or "" }, "\0")
+                if not seen[id] then
+                    seen[id] = true
+                    table.insert(maps, map)
+                end
+            end
+        end
     end
 
     table.sort(maps, function(a, b)
@@ -18,6 +41,38 @@ local function get_keymaps()
     end)
 
     return maps
+end
+
+-- Buffer-local maps (LSP, nvim-tree, ...) exist only for the buffers open right now.
+local function get_buffer_keymaps()
+    local seen, out = {}, {}
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) then
+            local where = vim.bo[buf].filetype
+            if where == "" then
+                where = vim.fs.basename(vim.api.nvim_buf_get_name(buf))
+            end
+            for _, mode in ipairs(MODES) do
+                local ok, list = pcall(vim.api.nvim_buf_get_keymap, buf, mode)
+                if ok then
+                    for _, map in ipairs(list) do
+                        local id = table.concat({ where, map.mode or "", map.lhsraw or map.lhs or "", map.desc or "" }, "\0")
+                        if not seen[id] and map.lhs and map.lhs ~= "" then
+                            seen[id] = true
+                            table.insert(out, { where = where, map = map })
+                        end
+                    end
+                end
+            end
+        end
+    end
+    table.sort(out, function(a, b)
+        if a.where == b.where then
+            return (a.map.lhs or "") < (b.map.lhs or "")
+        end
+        return a.where < b.where
+    end)
+    return out
 end
 
 local function get_commands()
@@ -69,6 +124,11 @@ local function generate_lines()
         "| Show all keybindings | `<leader>?` |",
         "| Search keymaps | `<leader>fk` |",
         "| Search and run Ex commands | `<leader>fc` |",
+        "| One-screen guide: what you can do and should do | `<leader>fi` or `:EliteHelp` |",
+        "| Short practice tutorial | `:EliteTutor` |",
+        "| Create/open your own options, keymaps, plugins, languages | `:EliteEdit {options,keymaps,plugins,languages}` |",
+        "| Shipped keys your keymaps replaced | `:EliteKeys` |",
+        "| Save your personal files (they are not in git) | `:EliteBackup` |",
         "| Open this cheatsheet | `<leader>fC` or `:Cheatsheet` |",
         "| Force regeneration | `:CheatsheetUpdate` |",
         "| Check your setup | `:checkhealth elite` |",
@@ -82,16 +142,35 @@ local function generate_lines()
         "| --- | --- |",
     }
 
-    for _, group in ipairs(require("config.leader_groups").groups) do
+    for _, group in ipairs(require("config.leader_groups").all()) do
         table.insert(lines, string.format(
             "| `<leader>%s` | %s |",
-            group.key,
+            esc(group.key),
             esc(group.label)
         ))
     end
 
+    local ok_kg, kg = pcall(require, "util.keyguard")
+    if ok_kg then
+        local overrides = kg.overrides_grouped()
+        if #overrides > 0 then
+            table.insert(lines, "")
+            table.insert(lines, "## Shipped keys your keymaps replaced")
+            table.insert(lines, "")
+            table.insert(lines, "| Mode | Key | Shipped action | Now |")
+            table.insert(lines, "| --- | --- | --- | --- |")
+            for _, o in ipairs(overrides) do
+                table.insert(lines, string.format("| `%s` | `%s` | %s | %s |",
+                    esc(o.modes), esc(o.lhs), esc(o.was), esc(o.now)))
+            end
+        end
+    end
+
     table.insert(lines, "")
     table.insert(lines, "## Registered keymaps")
+    table.insert(lines, "")
+    table.insert(lines, "Normal, select, operator-pending, insert, terminal and command-line modes")
+    table.insert(lines, "(`v` means visual and select). Buffer-local keys are listed further down.")
     table.insert(lines, "")
     table.insert(lines, "| Mode | Key | Description |")
     table.insert(lines, "| --- | --- | --- |")
@@ -102,7 +181,25 @@ local function generate_lines()
                 "| `%s` | `%s` | %s |",
                 esc(map.mode),
                 esc(map.lhs),
-                esc(map.desc or "")
+                esc(label(map))
+            ))
+        end
+    end
+
+    local buffer_maps = get_buffer_keymaps()
+    if #buffer_maps > 0 then
+        table.insert(lines, "")
+        table.insert(lines, "## Buffer-local keymaps (buffers open when this was generated)")
+        table.insert(lines, "")
+        table.insert(lines, "| Buffer | Mode | Key | Description |")
+        table.insert(lines, "| --- | --- | --- | --- |")
+        for _, item in ipairs(buffer_maps) do
+            table.insert(lines, string.format(
+                "| `%s` | `%s` | `%s` | %s |",
+                esc(item.where),
+                esc(item.map.mode),
+                esc(item.map.lhs),
+                esc(label(item.map))
             ))
         end
     end

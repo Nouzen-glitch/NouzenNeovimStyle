@@ -33,6 +33,8 @@ Non-plugin code: `config/languages.lua` (language table) with
 labels), `util/user.lua` (loads your `lua/user/` files), `util/welcome.lua`
 (first-run install window, `:EliteInfo`), `util/lockfile.lua` (personal plugin
 lockfile, `:EliteLockReset`), `elite/health.lua` (`:checkhealth elite`).
+`util/keyguard.lua` (reports shipped keys your keymaps replace, `:EliteKeys`),
+`util/guide.lua` (`:EliteHelp`, `:EliteTutor`, `:EliteEdit`, `:EliteBackup`).
 
 Scripts (`scripts/`): `install.sh`, `uninstall.sh`, `update.sh`,
 `user-layer.sh`, `generate-cheatsheet.sh`. See [INSTALL.md](INSTALL.md).

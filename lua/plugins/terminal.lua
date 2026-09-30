@@ -1,33 +1,35 @@
 return {
-  'akinsho/toggleterm.nvim',
-  version = "*",
-  config = function()
-    require("toggleterm").setup({
-      size = 15,                     -- Height of the bottom terminal pane
-      open_mapping = [[<C-\>]],     -- Shortcut to toggle terminal (Ctrl + \)
-      direction = 'horizontal',      -- Opens at the bottom of the editor
-      shade_terminals = true,        -- Darkens the terminal background slightly
-      start_in_insert = true,        -- Automatically enter terminal-mode when opened
-      insert_mappings = true,        -- Keeps open_mapping working in insert mode
-      terminal_mappings = true,      -- Keeps open_mapping working in terminal mode
-    })
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    -- These are plain `opts`, so you can change them from lua/user/plugins/
+    -- without editing this file, e.g. to rebind the toggle key:
+    --   { "akinsho/toggleterm.nvim", opts = { open_mapping = [[<C-t>]] } }
+    opts = {
+        size = 15,                 -- Height of the bottom terminal pane
+        open_mapping = [[<C-\>]],  -- Toggle terminal (Ctrl + \)
+        direction = "horizontal",  -- Opens at the bottom of the editor
+        shade_terminals = true,    -- Darkens the terminal background slightly
+        start_in_insert = true,    -- Enter terminal mode when opened
+        insert_mappings = true,    -- Keep open_mapping working in insert mode
+        terminal_mappings = true,  -- Keep open_mapping working in terminal mode
+    },
+    config = function(_, opts)
+        require("toggleterm").setup(opts)
 
-    -- Helper function to map keys inside the terminal buffer
-    function _G.set_terminal_keymaps()
-      local opts = { buffer = 0 }
-      
-      -- Press Esc to switch to Normal mode (allows scrolling and window navigation)
-      vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], opts)
-      
-      -- Seamless window navigation out of the terminal window
-      vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], opts)
-      vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], opts)
-      vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], opts)
-      vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], opts)
-    end
-
-    -- Automatically apply these shortcuts only when a terminal opens
-    vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
-  end
+        -- Keys that only exist inside terminal buffers.
+        vim.api.nvim_create_autocmd("TermOpen", {
+            group = vim.api.nvim_create_augroup("EliteTerminal", { clear = true }),
+            pattern = "term://*",
+            callback = function(args)
+                local o = { buffer = args.buf }
+                -- Esc switches to Normal mode (scroll, search, window navigation).
+                vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], o)
+                -- Move out of the terminal window.
+                vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], o)
+                vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-w>j]], o)
+                vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-w>k]], o)
+                vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], o)
+            end,
+        })
+    end,
 }
-

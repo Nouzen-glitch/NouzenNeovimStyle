@@ -10,6 +10,7 @@ Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
 
 | File | Read it for |
 | --- | --- |
+| [GETTING_STARTED.md](GETTING_STARTED.md) | Start here: your first 15 minutes, what to do and what to avoid |
 | [INSTALL.md](INSTALL.md) | Installing (alongside or replace), every script and flag, updating, undoing, troubleshooting |
 | [MIGRATING.md](MIGRATING.md) | Customizing without editing shipped files; bringing your own config and plugins |
 | [KEYBINDINGS.md](KEYBINDINGS.md) | Every custom key, grouped by task, plus a learning order |
@@ -42,6 +43,13 @@ git clone <repo> ~/dotfiles/nvim
 ~/dotfiles/nvim/scripts/install.sh
 ```
 
+Always install with `scripts/install.sh` rather than cloning straight into
+`~/.config/nvim`: the script gives you undo, a backup of your old config, a
+safety copy of your personal files and the `nvim-elite` launcher. Your personal
+files (`lua/user/`) live inside the cloned folder and are not in git, so keep
+that folder, and run `scripts/user-layer.sh export` (or `:EliteBackup`) before
+deleting or re-cloning it.
+
 The installer never deletes anything. If you already have a Neovim config it
 asks how to proceed:
 
@@ -55,7 +63,7 @@ asks how to proceed:
 | `scripts/install.sh` | Install. Flags: `--alongside`, `--replace`, `--appname NAME`, `--clean-data`, `--dry-run`, `--yes` |
 | `scripts/uninstall.sh` | Remove the link and launcher, restore your backup. Flags: `--appname`, `--dry-run`, `--yes` |
 | `scripts/update.sh` | Pull the latest config and show what changed. Flag: `--check` |
-| `scripts/user-layer.sh` | `list`, `export`, `import` your personal files between machines |
+| `scripts/user-layer.sh` | `list`, `export`, `import`, `backup`, `backups` for your personal files (not in git) |
 
 What every flag does, worked scenarios (first install, trying it out, switching,
 updating, a second machine, undoing) and troubleshooting are in
@@ -68,6 +76,8 @@ First launch checklist:
 :Mason             " servers and tools from config/languages.lua
 :checkhealth elite " tools, versions, install state
 :EliteInfo         " how this config was installed, where any backup is
+:EliteHelp         " one-screen guide: what you can do and should do
+:EliteTutor        " short practice tutorial
 ```
 
 ## Layout
@@ -84,6 +94,7 @@ First launch checklist:
 │   ├── uninstall.sh          removes the link, restores your backup
 │   ├── update.sh             pulls updates, shows what changed
 │   ├── user-layer.sh         export/import your personal files
+│   ├── smoke-test.sh         headless check that the modules load (for maintainers)
 │   └── generate-cheatsheet.sh  headless cheatsheet regeneration
 ├── systemd/                  user units that watch the config and regenerate the cheatsheet
 └── lua/
@@ -107,6 +118,8 @@ First launch checklist:
         ├── languages.lua     derives plugin lists from config/languages.lua
         ├── lockfile.lua      personal plugin lockfile (:EliteLockReset)
         ├── user.lua          loads your lua/user/ files, reports errors in them
+        ├── keyguard.lua      reports shipped keys your keymaps replace (:EliteKeys)
+        ├── guide.lua         :EliteHelp, :EliteTutor, :EliteEdit, :EliteBackup
         └── welcome.lua       first-run install window, :EliteInfo
 ```
 
@@ -141,6 +154,7 @@ Leader is **Space**. `jk` exits Insert mode. Arrow keys are disabled on purpose
 | `<C-\>` | Toggle terminal |
 | `<leader>?` | Show every keybinding (which-key) |
 | `<leader>fC` | Open the generated cheatsheet |
+| `<leader>fi` / `:EliteHelp` | One-screen guide: what you can do and should do |
 
 Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 

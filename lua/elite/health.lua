@@ -37,6 +37,16 @@ function M.check()
     else
         h.error("Config folder not found")
     end
+    local state = vim.fn.stdpath("state")
+    if vim.fn.filereadable(state .. "/elite-install-info") == 1
+        or vim.fn.filereadable(state .. "/elite-install-info.shown") == 1 then
+        h.ok("Installed with scripts/install.sh")
+    else
+        h.warn("No install record: this config was not set up with scripts/install.sh", {
+            "It works, but there is no undo, launcher or automatic safety copy of your files.",
+            "For the safest setup run scripts/install.sh from the repo folder.",
+        })
+    end
     h.info("Run :EliteInfo to see how it was installed and where any backup went")
     h.info("Plugin lockfile: " .. require("util.lockfile").path()
         .. (vim.g.elite_lockfile_in_repo and " (tracked in the repo)" or " (personal copy)"))
@@ -86,8 +96,53 @@ function M.check()
         any = true
     end
     if not any then
-        h.info("Nothing here yet. See docs/MIGRATING.md and the *.example files in lua/user/")
+        h.info("Nothing here yet. :EliteEdit options|keymaps|plugins|languages creates each file,")
+        h.info("or see docs/MIGRATING.md and the *.example files in lua/user/")
     end
+
+    h.start("Elite: your keymaps vs shipped keys")
+    local kg = require("util.keyguard")
+    local over, removed, clashes = kg.overrides_grouped(), kg.removed_grouped(), kg.clashes_grouped()
+    if not vim.uv.fs_stat(root .. "/keymaps.lua") then
+        h.info("No lua/user/keymaps.lua yet, so nothing to compare.")
+    elseif #over + #removed + #clashes == 0 then
+        h.ok("None of your keymaps replace, remove or shadow a shipped key")
+    end
+    for _, o in ipairs(over) do
+        local advice = o.plugin
+            and { "This plugin sets the key after your keymaps load, so the plugin wins.",
+                "Change it through the plugin's opts: docs/MIGRATING.md, section 4." }
+            or { "The shipped action still exists as a command: find it with <leader>fc and give it another key,",
+                "or delete your mapping to get the shipped key back. <leader>fk shows what a key does now." }
+        h.warn(string.format('%s (%s) replaced: was "%s", now "%s"', o.lhs, o.modes, o.was, o.now), advice)
+    end
+    for _, o in ipairs(removed) do
+        h.info(string.format('%s (%s) removed: was "%s"', o.lhs, o.modes, o.was))
+    end
+    for _, o in ipairs(clashes) do
+        h.warn(string.format("%s (%s) waits %d ms before firing because %s also exists",
+            o.short, o.modes, vim.o.timeoutlen, o.long),
+            "Use a key that is not the start of another key, or accept the short delay.")
+    end
+
+    h.start("Elite: safety copies of your personal files")
+    local dir = require("util.guide").backup_dir()
+    local copies = vim.fn.glob(dir .. "/user-layer-*.tar.gz", false, true)
+    table.sort(copies)
+    if #copies > 0 then
+        local st = vim.uv.fs_stat(copies[#copies])
+        local days = st and math.floor((os.time() - st.mtime.sec) / 86400) or 0
+        h.ok(#copies .. " safety copy(ies) in " .. dir .. " (newest is " .. days .. " day(s) old)")
+    elseif any then
+        h.warn("Your personal files exist but no safety copy has been made yet", {
+            "Run :EliteBackup now, or scripts/user-layer.sh backup.",
+            "scripts/install.sh and scripts/update.sh make one automatically.",
+        })
+    else
+        h.info("Nothing to back up yet.")
+    end
+    h.info("Another machine: scripts/user-layer.sh export FILE here, import FILE there.")
+    h.info("Never delete or re-clone the repo folder before exporting: lua/user/ is not in git.")
 end
 
 return M

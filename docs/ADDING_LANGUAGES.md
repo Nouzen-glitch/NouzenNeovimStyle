@@ -13,6 +13,9 @@ The table feeds `plugins/lsp.lua` (servers, mason-tool-installer),
 `plugins/treesitter.lua` and `plugins/formatting.lua`. You should not need to
 edit those.
 
+Inside Neovim, `:EliteEdit languages` creates and opens an empty `languages_local.lua` for you.
+It is not in git: back it up with `:EliteBackup` (see [MIGRATING.md](MIGRATING.md)).
+
 Prefer `languages_local.lua`: your languages stay separate from the defaults.
 From inside the config folder, start from the template:
 

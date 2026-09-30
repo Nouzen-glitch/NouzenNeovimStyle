@@ -27,6 +27,12 @@ After installing, start Neovim. The first launch installs plugins (about a
 minute) and shows a window explaining what the installer did. Then run
 `:checkhealth elite`.
 
+Then run `:EliteHelp` (one screen) and `:EliteTutor` (practice), or read
+[GETTING_STARTED.md](GETTING_STARTED.md). **Keep the folder you cloned into:**
+the config is a link to it, and your personal files (`lua/user/`, not in git)
+live inside it. Save them (`scripts/user-layer.sh export` or `:EliteBackup`)
+before deleting or re-cloning it.
+
 ## 2. The two install modes
 
 | | Alongside | Replace |
@@ -166,6 +172,8 @@ Moves your personal files between machines. See
 scripts/user-layer.sh list
 scripts/user-layer.sh export [FILE]
 scripts/user-layer.sh import FILE
+scripts/user-layer.sh backup
+scripts/user-layer.sh backups
 ```
 
 | Command | What it does |
@@ -173,6 +181,11 @@ scripts/user-layer.sh import FILE
 | `list` | Shows which personal files exist. |
 | `export [FILE]` | Packs `lua/user/*.lua`, `lua/user/plugins/*.lua` and `lua/config/languages_local.lua` into a `.tar.gz` (default `./elite-user-layer-<date>.tar.gz`). The `*.example` files are not included. Check for secrets before sharing it. |
 | `import FILE` | Unpacks onto this machine. Any file it would overwrite is first renamed to `<name>.bak.<timestamp>`. It refuses archives containing anything outside `lua/user/` and `languages_local.lua`, or unsafe paths. |
+| `backup` | Quiet safety copy to `~/.local/state/elite-backups/user-layer-<timestamp>.tar.gz`; the newest 10 are kept. Does nothing if you have no personal files. Run automatically by `install.sh` and `update.sh`. |
+| `backups` | Lists the safety copies, newest first. Restore one with `import`. |
+
+Safety copies are shared by every install (alongside or replace). `:EliteBackup`
+inside Neovim is the same as `export` with a default path in your home folder.
 
 ## 7. Scenarios
 
@@ -272,7 +285,10 @@ touched. Plugin data is left and listed (section 3).
 ### I. Reinstalling Neovim or the whole OS
 
 Reinstalling the Neovim package changes nothing. After an OS reinstall, clone
-the repo again, run the installer, and import your personal layer (G).
+the repo again, run the installer, and import your personal layer (G). Before
+wiping a machine or deleting the repo folder, export first
+(`scripts/user-layer.sh export` or `:EliteBackup`); the newest automatic
+safety copies are in `~/.local/state/elite-backups/`.
 
 ## 8. Plugin versions (the lockfile)
 
@@ -296,6 +312,7 @@ launch. Adding or updating plugins changes only the personal copy, so
 | Active config (link to the repo) | `~/.config/nvim` (replace) or `~/.config/elite` (alongside) |
 | Installed plugins, Mason tools, personal lockfile | `~/.local/share/<name>/` |
 | Install record, generated cheatsheet | `~/.local/state/<name>/` |
+| Safety copies of your personal files | `~/.local/state/elite-backups/` (shared by all installs) |
 | Backup of your old config | `~/.config/nvim.backup.<timestamp>` |
 | Launcher (alongside) | `~/.local/bin/nvim-<name>` |
 | Your personal files | `lua/user/` and `lua/config/languages_local.lua` inside the repo (gitignored) |
@@ -323,3 +340,6 @@ launch. Adding or updating plugins changes only the personal copy, so
 | I closed the first-run window and want it back | `:EliteInfo`. |
 | Where is the cheatsheet? | `:Cheatsheet` opens it; it is stored in `~/.local/state/<name>/cheatsheet.md`. |
 | Not sure what is wrong | `:checkhealth elite`, then `:checkhealth`. |
+| My `lua/user/` files are gone after a re-clone | They are not in git. `scripts/user-layer.sh backups`, then `import` the newest, or import your own export. |
+| Startup notice: "your keymaps replace N shipped keys" | `:EliteKeys` lists them; pick other keys or delete your lines ([MIGRATING.md](MIGRATING.md)). |
+| A welcome notice about "not set up by install.sh" | The config was cloned by hand. It works; run `scripts/install.sh` for undo and safety copies, or set `vim.g.elite_hide_notices = true`. |

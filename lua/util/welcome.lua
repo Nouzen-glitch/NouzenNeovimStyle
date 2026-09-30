@@ -1,7 +1,9 @@
 -- Tells the user, once, what scripts/install.sh did (backup location, how to
 -- start, how to undo). The installer writes <state>/elite-install-info; the
 -- first launch shows it in a centered window and renames the file to *.shown.
--- `:EliteInfo` shows it again.
+-- `:EliteInfo` shows it again. A config that was cloned by hand (no install
+-- record) gets a one-time notice explaining what it is missing.
+-- M.show(lines, title) is reused by :EliteHelp and :EliteKeys.
 local M = {}
 
 local function paths()
@@ -40,16 +42,40 @@ local function message(info)
         table.insert(lines, "")
         table.insert(lines, "Undo:   " .. info.source .. "/scripts/uninstall.sh")
         table.insert(lines, "Update: " .. info.source .. "/scripts/update.sh")
+        table.insert(lines, "")
+        table.insert(lines, "Keep that folder: the config is a link to it, and your personal files")
+        table.insert(lines, "(lua/user/, not in git) live inside it. Save them before deleting or")
+        table.insert(lines, "re-cloning it:  :EliteBackup  or  scripts/user-layer.sh export FILE")
     end
     table.insert(lines, "")
+    table.insert(lines, "Start here:  :EliteHelp (one-screen guide)   :EliteTutor (practice)")
     table.insert(lines, "Show this again: :EliteInfo     Check your setup: :checkhealth elite")
 
     return lines
 end
 
+local function manual_message()
+    return {
+        "Welcome to Elite Neovim.",
+        "",
+        "This config was not set up by scripts/install.sh, so there is no install",
+        "record, undo or launcher. It works fine as it is. Two things to know:",
+        "",
+        "1. Your personal files live in lua/user/ inside this config folder and are",
+        "   NOT tracked by git. Deleting or re-cloning the folder deletes them.",
+        "   Save them with :EliteBackup (or scripts/user-layer.sh export FILE).",
+        "",
+        "2. For the safest setup (backup of an old config, undo, safety copies",
+        "   before updates) run scripts/install.sh from the repo.",
+        "",
+        "Start here:  :EliteHelp (guide)   :EliteTutor (practice)   :checkhealth elite",
+        "(This notice appears once.)",
+    }
+end
+
 -- A centered window that sits above other floats (such as lazy.nvim's installer
 -- on the very first launch), so it cannot be missed. Close with q, <Esc> or <CR>.
-local function show(lines)
+local function show(lines, title)
     local max_width = math.max(20, vim.o.columns - 8)
     local width = 0
     for _, l in ipairs(lines) do
@@ -77,9 +103,9 @@ local function show(lines)
         height = height,
         style = "minimal",
         border = "rounded",
-        title = " Elite Neovim ",
+        title = " " .. (title or "Elite Neovim") .. " ",
         title_pos = "center",
-        footer = " q / <Esc> / <CR> to close ",
+        footer = " q / <Esc> / <CR> to close (j/k to scroll) ",
         footer_pos = "center",
         zindex = 250,
     })
@@ -98,6 +124,8 @@ local function show(lines)
     end
 end
 
+M.show = show
+
 function M.setup()
     local fresh, shown = paths()
 
@@ -106,27 +134,48 @@ function M.setup()
             or (vim.fn.filereadable(shown) == 1 and shown)
             or nil
         if not path then
-            vim.notify("No install record found (this config was not set up by scripts/install.sh).")
+            show(manual_message())
             return
         end
         show(message(read(path)))
     end, { desc = "Show how Elite Neovim was installed" })
 
-    if vim.fn.filereadable(fresh) == 0 then
+    if vim.fn.filereadable(fresh) == 1 then
+        vim.api.nvim_create_autocmd("VimEnter", {
+            once = true,
+            callback = function()
+                -- Delay a moment so it lands after lazy.nvim's first-run UI opens.
+                vim.defer_fn(function()
+                    local ok, info = pcall(read, fresh)
+                    if not ok then
+                        return
+                    end
+                    show(message(info))
+                    vim.uv.fs_rename(fresh, shown)
+                end, 300)
+            end,
+        })
         return
     end
 
+    -- No install record: cloned by hand. Explain once. Opt out with
+    -- vim.g.elite_hide_notices = true in lua/user/options.lua.
+    local marker = vim.fn.stdpath("state") .. "/elite-manual-notice-shown"
+    if vim.fn.filereadable(shown) == 1 or vim.fn.filereadable(marker) == 1 or vim.g.elite_hide_notices then
+        return
+    end
     vim.api.nvim_create_autocmd("VimEnter", {
         once = true,
         callback = function()
-            -- Delay a moment so it lands after lazy.nvim's first-run UI opens.
             vim.defer_fn(function()
-                local ok, info = pcall(read, fresh)
-                if not ok then
+                if #vim.api.nvim_list_uis() == 0 then
                     return
                 end
-                show(message(info))
-                vim.uv.fs_rename(fresh, shown)
+                show(manual_message())
+                pcall(function()
+                    vim.fn.mkdir(vim.fn.fnamemodify(marker, ":h"), "p")
+                    vim.fn.writefile({ "1" }, marker)
+                end)
             end, 300)
         end,
     })
