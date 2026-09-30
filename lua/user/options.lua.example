@@ -1,0 +1,9 @@
+-- Copy to lua/user/options.lua. Loaded right after config/options.lua, so
+-- anything you set here wins. Gitignored: your changes never conflict on update.
+
+-- Turn the arrow-key ban off:
+-- vim.g.elite_disable_arrows = false
+
+-- vim.opt.shiftwidth = 2
+-- vim.opt.tabstop = 2
+-- vim.opt.wrap = true

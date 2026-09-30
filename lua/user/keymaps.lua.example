@@ -1,0 +1,4 @@
+-- Copy to lua/user/keymaps.lua. Loaded right after config/keymaps.lua, so a
+-- mapping here replaces a default with the same key. Always give it a desc.
+
+-- vim.keymap.set("n", "<leader>gg", "<cmd>Telescope git_status<cr>", { desc = "Git status" })

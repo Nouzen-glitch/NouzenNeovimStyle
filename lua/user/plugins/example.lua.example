@@ -1,0 +1,16 @@
+-- Copy to lua/user/plugins/anything.lua. Every .lua file in this folder is a
+-- lazy.nvim spec file, loaded after the shipped plugins.
+--
+-- lazy.nvim merges specs that name the same plugin, and merges `opts` tables,
+-- so you can tweak a shipped plugin without editing its file.
+
+return {
+    -- Add a plugin of your own:
+    -- { "ThePrimeagen/harpoon", branch = "harpoon2", dependencies = { "nvim-lua/plenary.nvim" } },
+
+    -- Change a shipped plugin's options:
+    -- { "nvim-telescope/telescope.nvim", opts = { defaults = { layout_strategy = "vertical" } } },
+
+    -- Turn a shipped plugin off:
+    -- { "folke/trouble.nvim", enabled = false },
+}
