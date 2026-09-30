@@ -10,8 +10,9 @@ return {
         },
         config = function()
             -- Servers come from config/languages.lua (+ languages_local.lua).
-            -- Mason installs them; mason-lspconfig enables every installed
-            -- server through vim.lsp.enable().
+            -- Mason installs them; mason-lspconfig enables the ones listed in
+            -- the language table through vim.lsp.enable(). Servers that merely
+            -- happen to be installed in Mason (from an older setup) stay off.
             --
             -- Per-server settings go here, e.g.:
             --   vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })
@@ -53,7 +54,9 @@ return {
         lazy = false,
         opts = {
             ensure_installed = languages.servers(),
-            automatic_enable = true,
+            -- Only enable servers from the language table (not everything
+            -- that happens to be installed in Mason).
+            automatic_enable = languages.servers(),
         },
         dependencies = {
             { "mason-org/mason.nvim", opts = {} },

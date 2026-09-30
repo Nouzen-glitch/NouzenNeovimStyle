@@ -15,7 +15,12 @@ return {
         "nvim-lualine/lualine.nvim",
         event = "VeryLazy",
         dependencies = { "nvim-tree/nvim-web-devicons" },
-        opts = {},
+        opts = {
+            -- Show open buffers along the top so H / L have something to look at.
+            tabline = {
+                lualine_a = { { "buffers", mode = 0 } },
+            },
+        },
     },
 
     {

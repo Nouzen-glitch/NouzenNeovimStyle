@@ -38,6 +38,8 @@ function M.check()
         h.error("Config folder not found")
     end
     h.info("Run :EliteInfo to see how it was installed and where any backup went")
+    h.info("Plugin lockfile: " .. require("util.lockfile").path()
+        .. (vim.g.elite_lockfile_in_repo and " (tracked in the repo)" or " (personal copy)"))
 
     h.start("Elite: required tools")
     check_tool("git", h.error, "Needed by lazy.nvim to install plugins.")

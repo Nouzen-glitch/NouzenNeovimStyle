@@ -10,11 +10,16 @@ Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
 
 | File | Read it for |
 | --- | --- |
+| [INSTALL.md](INSTALL.md) | Installing (alongside or replace), every script and flag, updating, undoing, troubleshooting |
+| [MIGRATING.md](MIGRATING.md) | Customizing without editing shipped files; bringing your own config and plugins |
 | [KEYBINDINGS.md](KEYBINDINGS.md) | Every custom key, grouped by task, plus a learning order |
 | [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md) | Adding a language: one line, nothing installed unless listed |
 | [COMPONENTS.md](COMPONENTS.md) | What each plugin/tool is and which file configures it |
 | [ENVIRONMENT_GUIDE.md](ENVIRONMENT_GUIDE.md) | Maintaining the config: workflow, git, cheatsheet automation, known issues |
-| [cheatsheet.md](cheatsheet.md) | **Generated** from the running editor. Never edit by hand |
+| [../CHANGELOG.md](../CHANGELOG.md) | What changed, newest first (`scripts/update.sh` prints new entries) |
+
+The live cheatsheet is **generated** from the running editor (`<leader>fC` or
+`:Cheatsheet`). It is stored in Neovim's state folder, not in this repo.
 
 ## Requirements
 
@@ -32,27 +37,37 @@ sudo pacman -S neovim git ripgrep base-devel curl unzip
 
 ## Install
 
-**Recommended: symlink.** Keep one real copy in `~/dotfiles/nvim` and point
-Neovim at it.
-
 ```bash
-# back up anything existing first
-mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d-%H%M%S) 2>/dev/null
-ln -s ~/dotfiles/nvim ~/.config/nvim
-nvim        # lazy.nvim bootstraps and installs plugins
+git clone <repo> ~/dotfiles/nvim
+~/dotfiles/nvim/scripts/install.sh
 ```
 
-On another machine: `git clone <repo> ~/dotfiles/nvim`, then the same `ln -s`.
+The installer never deletes anything. If you already have a Neovim config it
+asks how to proceed:
 
-`scripts/install.sh` does the same thing for you: it backs up any existing
-config and symlinks `~/.config/nvim` to this directory.
+| Choice | Result |
+| --- | --- |
+| **Alongside** (default, safest) | Run this config with `nvim-elite`. Your current `nvim` and its plugins are not touched. |
+| **Replace** | This becomes `nvim`. Your old config is moved to `~/.config/nvim.backup.<timestamp>`. |
+
+| Script | Purpose |
+| --- | --- |
+| `scripts/install.sh` | Install. Flags: `--alongside`, `--replace`, `--appname NAME`, `--clean-data`, `--dry-run`, `--yes` |
+| `scripts/uninstall.sh` | Remove the link and launcher, restore your backup. Flags: `--appname`, `--dry-run`, `--yes` |
+| `scripts/update.sh` | Pull the latest config and show what changed. Flag: `--check` |
+| `scripts/user-layer.sh` | `list`, `export`, `import` your personal files between machines |
+
+What every flag does, worked scenarios (first install, trying it out, switching,
+updating, a second machine, undoing) and troubleshooting are in
+[INSTALL.md](INSTALL.md). Add `--dry-run` to see what would happen first.
 
 First launch checklist:
 
 ```vim
-:Lazy          " plugins installed?
-:Mason         " servers and tools from config/languages.lua
-:checkhealth
+:Lazy              " plugins installed?
+:Mason             " servers and tools from config/languages.lua
+:checkhealth elite " tools, versions, install state
+:EliteInfo         " how this config was installed, where any backup is
 ```
 
 ## Layout
@@ -60,36 +75,49 @@ First launch checklist:
 ```text
 ~/dotfiles/nvim/
 ├── init.lua                  entry point (keep tiny)
-├── lazy-lock.json            pinned plugin versions (commit this)
-├── docs/                     README, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE, generated cheatsheet
+├── lazy-lock.json            plugin versions the maintainer tested (seeds each user's personal copy)
+├── CHANGELOG.md              what changed, newest first
+├── .gitignore                keeps your personal layer out of git
+├── docs/                     README, INSTALL, MIGRATING, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE
 ├── scripts/
-│   ├── install.sh            backs up old config, symlinks this dir to ~/.config/nvim
+│   ├── install.sh            alongside or replace install, with backup and dry-run
+│   ├── uninstall.sh          removes the link, restores your backup
+│   ├── update.sh             pulls updates, shows what changed
+│   ├── user-layer.sh         export/import your personal files
 │   └── generate-cheatsheet.sh  headless cheatsheet regeneration
 ├── systemd/                  user units that watch the config and regenerate the cheatsheet
 └── lua/
     ├── config/
     │   ├── options.lua       editor behavior, leader = Space
     │   ├── keymaps.lua       custom keybindings
-    │   ├── autocmds.lua      yank highlight, diagnostic display
+    │   ├── autocmds.lua      yank highlight, cursor restore, diagnostic display
     │   ├── languages.lua     default languages: LSP, parser, formatter, tools
-    │   ├── languages_local.lua  YOUR additions (optional, you create it)
+    │   ├── languages_local.lua  YOUR additions (optional, you create it, gitignored)
     │   ├── lazy.lua          lazy.nvim bootstrap
     │   └── leader_groups.lua leader namespaces (feeds which-key and the cheatsheet)
     ├── plugins/              one spec file per concern
     │   ├── completion.lua  formatting.lua  git.lua  lsp.lua
     │   ├── telescope.lua  terminal.lua  textobjects.lua
     │   └── treesitter.lua  ui.lua
+    ├── user/                 YOUR options, keymaps and plugins (gitignored; *.example files show how)
+    ├── elite/
+    │   └── health.lua        :checkhealth elite
     └── util/
         ├── cheatsheet.lua    cheatsheet generator (:Cheatsheet, :CheatsheetUpdate)
-        └── languages.lua     derives plugin lists from config/languages.lua
+        ├── languages.lua     derives plugin lists from config/languages.lua
+        ├── lockfile.lua      personal plugin lockfile (:EliteLockReset)
+        ├── user.lua          loads your lua/user/ files, reports errors in them
+        └── welcome.lua       first-run install window, :EliteInfo
 ```
 
 Where to change things:
 
 | Want to change | Edit |
 | --- | --- |
-| Editor behavior | `config/options.lua` |
-| Keybindings | `config/keymaps.lua` |
+| Anything just for you | `lua/user/` (options, keymaps, plugins), see [MIGRATING.md](MIGRATING.md) |
+| Updating this config | `scripts/update.sh`, see [INSTALL.md](INSTALL.md) |
+| Editor behavior (project default) | `config/options.lua` |
+| Keybindings (project default) | `config/keymaps.lua` |
 | Automatic behavior | `config/autocmds.lua` |
 | Leader group labels | `config/leader_groups.lua` |
 | Languages (LSP, syntax, formatting) | `config/languages_local.lua` for yours, `config/languages.lua` for defaults (see ADDING_LANGUAGES.md) |
@@ -99,7 +127,8 @@ Where to change things:
 
 ## Day-one essentials
 
-Leader is **Space**. `jk` exits Insert mode. Arrow keys are disabled on purpose.
+Leader is **Space**. `jk` exits Insert mode. Arrow keys are disabled on purpose
+(`vim.g.elite_disable_arrows = false` in `lua/user/options.lua` turns that off).
 
 | Key | Action |
 | --- | --- |
@@ -107,6 +136,7 @@ Leader is **Space**. `jk` exits Insert mode. Arrow keys are disabled on purpose.
 | `gd` `gr` `K` | Definition / references / hover docs |
 | `<leader>rn` `<leader>ca` | Rename / code action |
 | `<leader>cf` | Format (also runs on save) |
+| `<C-s>` | Save |
 | `<leader>e` | File explorer |
 | `<C-\>` | Toggle terminal |
 | `<leader>?` | Show every keybinding (which-key) |
@@ -117,7 +147,7 @@ Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 ## Health checks
 
 ```vim
-:checkhealth            :checkhealth vim.lsp     :checkhealth mason
+:checkhealth elite      :checkhealth vim.lsp     :checkhealth mason
 :checkhealth nvim-treesitter                     :ConformInfo
 :Lazy                   :Mason
 ```
@@ -125,5 +155,7 @@ Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 ## Not included (yet)
 
 DAP debugging, AI assistants, database/REST/Docker clients, persistent
-terminal sessions (tmux/zellij-style detach and reattach), dashboards.
+terminal sessions (tmux/zellij-style detach and reattach), dashboards,
+session restore, a Windows installer.
 Multiple numbered terminals are supported via toggleterm (`2<C-\>`, `:TermSelect`).
+Anything from this list can be added through `lua/user/plugins/`.

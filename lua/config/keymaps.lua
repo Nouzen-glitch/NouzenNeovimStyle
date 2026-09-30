@@ -1,5 +1,7 @@
 local map = vim.keymap.set
 
+-- Your own mappings go in lua/user/keymaps.lua (loaded after this file).
+
 -- ============================================================================
 -- Vim fundamentals
 -- ============================================================================
@@ -8,11 +10,14 @@ local map = vim.keymap.set
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 
 -- Arrow-key ban: learn real Vim movement.
-for _, mode in ipairs({ "n", "i", "v" }) do
-    map(mode, "<Up>", "<Nop>")
-    map(mode, "<Down>", "<Nop>")
-    map(mode, "<Left>", "<Nop>")
-    map(mode, "<Right>", "<Nop>")
+-- Opt out in lua/user/options.lua:  vim.g.elite_disable_arrows = false
+if vim.g.elite_disable_arrows ~= false then
+    for _, mode in ipairs({ "n", "i", "v" }) do
+        map(mode, "<Up>", "<Nop>")
+        map(mode, "<Down>", "<Nop>")
+        map(mode, "<Left>", "<Nop>")
+        map(mode, "<Right>", "<Nop>")
+    end
 end
 
 -- Keep search results centered.
@@ -26,6 +31,16 @@ map("n", "k", "gk", { desc = "Up display line" })
 -- Keep visual selections after indenting.
 map("v", "<", "<gv", { desc = "Indent left" })
 map("v", ">", ">gv", { desc = "Indent right" })
+
+-- Small comforts.
+map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
+map("n", "<C-s>", "<cmd>write<cr>", { desc = "Save file" })
+map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit window" })
+map("n", "<C-d>", "<C-d>zz", { desc = "Half page down, centered" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Half page up, centered" })
+map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+map("x", "p", [["_dP]], { desc = "Paste without overwriting register" })
 
 -- ============================================================================
 -- Windows
@@ -72,8 +87,8 @@ map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, 
 map("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 map("n", "<leader>dq", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
--- Signature help on demand. Completion documentation is handled separately.
-map("i", "<C-h>", vim.lsp.buf.signature_help, { desc = "Signature help" })
+-- Signature help in Insert mode is Neovim's built-in <C-s> (0.11+). A custom
+-- <C-h> mapping is avoided because many terminals send <C-h> for Backspace.
 
 -- ============================================================================
 -- Telescope
@@ -105,7 +120,7 @@ map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { des
 map({ "n", "v" }, "<leader>cf", function()
     require("conform").format({
         async = true,
-        lsp_fallback = true,
+        lsp_format = "fallback",
     })
 end, { desc = "Format file/selection" })
 

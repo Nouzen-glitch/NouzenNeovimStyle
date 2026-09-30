@@ -1,5 +1,6 @@
 -- Editor behavior / appearance.
 -- Keep this file deliberately boring: editor fundamentals only.
+-- To change any of this for yourself, use lua/user/options.lua (see docs/MIGRATING.md).
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -37,8 +38,16 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.showmode = false
 vim.opt.laststatus = 3
 
+-- Small comforts.
+vim.opt.confirm = true          -- ask instead of failing on :q with unsaved changes
+vim.opt.inccommand = "split"    -- live preview for :s substitutions
+vim.opt.winborder = "rounded"   -- consistent borders on floating windows (0.11+)
+
 -- Keep folds closed only when explicitly requested.
 vim.opt.foldmethod = "manual"
+
+-- Arrow keys are disabled on purpose to learn real Vim movement.
+-- Turn that off in lua/user/options.lua with:  vim.g.elite_disable_arrows = false
 
 -- Disable the mouse if you want a completely keyboard-only editor:
 -- vim.opt.mouse = ""

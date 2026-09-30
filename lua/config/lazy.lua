@@ -18,12 +18,22 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+-- Your personal plugins live in lua/user/plugins/ (gitignored). lazy.nvim prints
+-- an error when an imported folder has no specs, so only import it once it
+-- contains a plugin file.
+local spec = { { import = "plugins" } }
+local user_plugins = vim.fn.stdpath("config") .. "/lua/user/plugins"
+if #vim.fn.glob(user_plugins .. "/**/*.lua", false, true) > 0 then
+    table.insert(spec, { import = "user.plugins" })
+end
+
 require("lazy").setup({
-    spec = {
-        { import = "plugins" },
-    },
+    -- Personal copy by default; see util/lockfile.lua.
+    lockfile = require("util.lockfile").path(),
+    spec = spec,
     rocks = { enabled = false },
-    checker = { enabled = true },
+    -- Check for plugin updates quietly; run :Lazy to see them.
+    checker = { enabled = true, notify = false },
     change_detection = { notify = false },
     install = {
         colorscheme = { "tokyonight" },

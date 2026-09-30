@@ -4,7 +4,42 @@ local group = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = group,
     callback = function()
-        vim.highlight.on_yank()
+        vim.hl.on_yank()
+    end,
+})
+
+-- Reopen a file at the position where you last left it.
+vim.api.nvim_create_autocmd("BufReadPost", {
+    group = group,
+    callback = function(args)
+        if vim.bo[args.buf].filetype == "gitcommit" then
+            return
+        end
+        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+        if mark[1] > 0 and mark[1] <= vim.api.nvim_buf_line_count(args.buf) then
+            pcall(vim.api.nvim_win_set_cursor, 0, mark)
+        end
+    end,
+})
+
+-- Reload files that changed on disk (git checkout, formatters, other tools).
+vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
+    group = group,
+    callback = function()
+        if vim.o.buftype ~= "nofile" then
+            vim.cmd("checktime")
+        end
+    end,
+})
+
+-- Create missing parent folders when saving to a new path.
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = group,
+    callback = function(args)
+        if args.match:match("^%w%w+:[\\/][\\/]") then
+            return -- remote/URL buffers
+        end
+        vim.fn.mkdir(vim.fn.fnamemodify(args.file, ":p:h"), "p")
     end,
 })
 

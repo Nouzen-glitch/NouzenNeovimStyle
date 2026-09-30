@@ -1,111 +1,104 @@
-# Migrating and Customizing
+# Customizing and Migrating
 
-How to install without losing your current setup, bring your own config and
-plugins along, and go back if you change your mind.
+How to make this config yours without editing its files, and how to bring an
+existing Neovim setup along. Installing, updating and undoing are in
+[INSTALL.md](INSTALL.md).
 
-## 1. Two ways to install
+## 1. Your personal layer
 
-| Mode | Command | What happens |
+Everything below is yours and is **gitignored**, so `scripts/update.sh` and
+`git pull` never conflict with it. Copy the `.example` files next to them to
+start.
+
+| File | Loaded | Use it for |
 | --- | --- | --- |
-| **Alongside** (safest) | `scripts/install.sh --alongside` | Installed as its own app. Start it with `nvim-elite`. Your normal `nvim` and everything it stores are not touched. |
-| **Replace** | `scripts/install.sh --replace` | This becomes your `nvim`. An existing `~/.config/nvim` is **moved** to `~/.config/nvim.backup.<timestamp>`, never deleted. |
+| `lua/user/options.lua` | Right after `config/options.lua` | Your options; the `vim.g.elite_*` switches in section 3. Your values win. |
+| `lua/user/keymaps.lua` | Right after `config/keymaps.lua` | Your keymaps. If a key is already mapped, yours replaces it. Give each mapping a `desc` so it shows in `<leader>?`. |
+| `lua/user/plugins/*.lua` | After the shipped plugins | Extra lazy.nvim plugin specs, and changes to shipped ones (section 4). |
+| `lua/config/languages_local.lua` | With the language table | Languages: server, parser, formatter ([ADDING_LANGUAGES.md](ADDING_LANGUAGES.md)). |
 
-Run `scripts/install.sh` with no options to be asked. If you already have a
-config and the script cannot ask (for example in a pipeline), it installs
-alongside. Add `--dry-run` to see exactly what would happen first.
+A missing file is fine. A mistake **inside** one of your files is shown as an
+error message naming the file and line, and the rest of the config still
+loads. `lua/user/plugins/` is only used once it contains a `.lua` file.
 
-Alongside mode works through Neovim's `NVIM_APPNAME`: config, plugins, state
-and cache move from `nvim` to `elite`:
+Check what you have with `scripts/user-layer.sh list` or `:checkhealth elite`.
 
-| What | Replace | Alongside |
-| --- | --- | --- |
-| Config | `~/.config/nvim` | `~/.config/elite` |
-| Plugins and data | `~/.local/share/nvim` | `~/.local/share/elite` |
-| State | `~/.local/state/nvim` | `~/.local/state/elite` |
-| Cache | `~/.cache/nvim` | `~/.cache/elite` |
+## 2. Bringing your old config over
 
-`nvim-elite` is a two-line launcher in `~/.local/bin` (make sure that folder is
-on your `PATH`).
+1. **Find your old config.** After a *replace* install it is in the backup
+   folder (`:EliteInfo` shows the path). After an *alongside* install it is
+   simply your normal `~/.config/nvim`.
+2. **Options:** copy the settings you care about into `lua/user/options.lua`.
+3. **Keymaps:** copy them into `lua/user/keymaps.lua`.
+4. **Plugins:** if your old config used lazy.nvim, its spec files can go into
+   `lua/user/plugins/` as they are. For packer or vim-plug, convert each
+   plugin to a spec (section 4 shows the shape).
+5. **Restart Neovim.** New plugins install on start. Then run
+   `:checkhealth elite`.
 
-### Reinstalling Neovim itself
+Things that can surprise you:
 
-Updating or reinstalling the Neovim package does not touch any of the folders
-above. Your config, and the symlink to it, stay exactly as they were.
-
-### Leftover data from an old setup
-
-The backup only covers the config folder. Plugins from an older setup (for
-example packer) live in `~/.local/share/nvim` and can still load under a
-replaced config. Either install alongside, or use
-`scripts/install.sh --replace --clean-data`, which moves the old data, state
-and cache folders aside to `*.backup.<timestamp>` too.
-
-## 2. How you know what happened
-
-- The installer ends with a summary box: what was linked, where any backup is,
-  how to start, and how to undo.
-- The first time Neovim starts it shows the same information once.
-- `:EliteInfo` shows it again at any time.
-- `:checkhealth elite` checks versions, required tools and the state of your
-  personal layer.
-
-## 3. Going back
-
-```bash
-scripts/uninstall.sh            # removes the link and launcher, restores your backup
-scripts/uninstall.sh --dry-run  # preview
-```
-
-Plugin data folders are left in place; the script lists them so you can delete
-them for a clean slate.
-
-## 4. Your personal layer: `lua/user/`
-
-Everything in `lua/user/` is yours and is gitignored, so `git pull` never
-conflicts with it. Copy the `.example` files and edit:
-
-| File | Purpose |
+| Topic | What happens |
 | --- | --- |
-| `lua/user/options.lua` | Loaded right after `config/options.lua`. Your options win. |
-| `lua/user/keymaps.lua` | Loaded right after `config/keymaps.lua`. Same key = yours wins. |
-| `lua/user/plugins/*.lua` | Extra lazy.nvim specs, loaded after the shipped plugins. |
-| `lua/config/languages_local.lua` | Languages (see [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md)). |
+| Same key, two owners | Yours wins (it loads later). Use `<leader>fk` to see what a key does first. |
+| Same plugin in both places | lazy.nvim merges the two specs; `opts` tables are merged deeply. |
+| Arrow keys | Disabled by default. See `vim.g.elite_disable_arrows` below. |
+| Language servers | Only servers in the language table are enabled. One that is merely installed in Mason stays off until you add it to `languages_local.lua`. |
+| Old plugin data | Plugins left over from another setup can load in replace mode. Use `--clean-data` or install alongside ([INSTALL.md](INSTALL.md)). |
 
-Because lazy.nvim merges specs that name the same plugin (and deep-merges
-`opts`), you can change shipped plugins without editing their files:
+## 3. Switches you can set
+
+Put these in `lua/user/options.lua`. They must be set there (not later) because
+they are read while the config loads.
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| `vim.g.elite_disable_arrows = false` | arrows disabled | Re-enable the arrow keys in normal, insert and visual mode. |
+| `vim.g.elite_lockfile_in_repo = true` | personal lockfile | Track plugin versions in the repo's `lazy-lock.json` instead of a personal copy. For maintainers who commit it. See [INSTALL.md](INSTALL.md) section 8. |
+
+Everything else is an ordinary Neovim option, for example
+`vim.opt.shiftwidth = 2`.
+
+## 4. Changing shipped plugins without editing them
+
+lazy.nvim merges specs that name the same plugin, so a file in
+`lua/user/plugins/` can add, tweak or disable:
 
 ```lua
 -- lua/user/plugins/mine.lua
 return {
-    { "ThePrimeagen/harpoon", branch = "harpoon2" },                          -- add
-    { "nvim-telescope/telescope.nvim", opts = { defaults = { layout_strategy = "vertical" } } }, -- tweak
-    { "folke/trouble.nvim", enabled = false },                                -- remove
+    -- add a plugin
+    { "ThePrimeagen/harpoon", branch = "harpoon2", dependencies = { "nvim-lua/plenary.nvim" } },
+
+    -- change a shipped plugin's options
+    { "nvim-telescope/telescope.nvim", opts = { defaults = { layout_strategy = "vertical" } } },
+
+    -- turn a shipped plugin off
+    { "folke/trouble.nvim", enabled = false },
 }
 ```
 
-### Bringing your old config over
+`lua/user/plugins/example.lua.example` has the same snippets to copy from.
 
-1. Find the backup path (`:EliteInfo`, or the installer summary).
-2. **Options:** copy the settings you care about into `lua/user/options.lua`.
-3. **Keymaps:** copy them into `lua/user/keymaps.lua`. Give each one a `desc`
-   so it shows up in `<leader>?` and the cheatsheet.
-4. **Plugins:** if your old config used lazy.nvim, its spec files can be copied
-   into `lua/user/plugins/` as they are. For packer or vim-plug, convert each
-   plugin to a spec like the ones above.
-5. Restart Neovim, then run `:Lazy` and `:checkhealth elite`.
+## 5. Keeping your layer safe and portable
 
-### Things to know when merging
+Your personal files are not in the project's git history. To back them up or
+move them to another machine:
 
-- **Same key, two owners.** If your keymap uses a key already used here, yours
-  wins (it loads later). Use `<leader>fk` to check what a key does first.
-- **Arrow keys.** They are disabled by default. Put
-  `vim.g.elite_disable_arrows = false` in `lua/user/options.lua` to turn that
-  off.
-- **Language servers.** Only servers in the language table are enabled. A
-  server that is merely installed in Mason stays off until you add it to
-  `languages_local.lua`.
-- **Lockfile.** Plugins you add change `lazy-lock.json`, which is tracked. If
-  you do not want that in your commits, `git update-index --skip-worktree
-  lazy-lock.json`, or keep your own copy.
-- **A mistake in a `user/` file** is reported as an error message on startup;
-  it does not stop the rest of the config from loading.
+```bash
+scripts/user-layer.sh export ~/elite-user.tar.gz      # on the old machine
+scripts/user-layer.sh import ~/elite-user.tar.gz      # on the new one
+```
+
+Details and safety checks are in [INSTALL.md](INSTALL.md), section 6. If you
+prefer git, you can also fork the repo and remove the personal-file lines from
+`.gitignore` to track them there.
+
+## 6. Commands added by this config
+
+| Command | Use |
+| --- | --- |
+| `:checkhealth elite` | Versions, required tools, install state, your personal files |
+| `:EliteInfo` | How this config was installed and where any backup is |
+| `:EliteLockReset` | Adopt the plugin versions shipped with the config |
+| `:Cheatsheet` / `:CheatsheetUpdate` | Open / regenerate the live cheatsheet |

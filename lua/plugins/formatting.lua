@@ -9,13 +9,13 @@ return {
             format_on_save = function(bufnr)
                 -- Disable automatic formatting for huge files.
                 local max_size = 200 * 1024 -- 200 KB
-                local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+                local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
                 if ok and stats and stats.size > max_size then
                     return
                 end
                 return {
                     timeout_ms = 1000,
-                    lsp_fallback = true,
+                    lsp_format = "fallback",
                 }
             end,
         },

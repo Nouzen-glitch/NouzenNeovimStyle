@@ -6,7 +6,7 @@ one table, and adding a language is one line.
 | File | Role |
 | --- | --- |
 | `lua/config/languages.lua` | Defaults shipped with the config |
-| `lua/config/languages_local.lua` | **Your additions.** Optional; you create it |
+| `lua/config/languages_local.lua` | **Your additions.** Optional; you create it (gitignored) |
 | `lua/util/languages.lua` | Turns the table into server/parser/formatter/tool lists (never edit) |
 
 The table feeds `plugins/lsp.lua` (servers, mason-tool-installer),
@@ -14,11 +14,10 @@ The table feeds `plugins/lsp.lua` (servers, mason-tool-installer),
 edit those.
 
 Prefer `languages_local.lua`: your languages stay separate from the defaults.
-Start from the template:
+From inside the config folder, start from the template:
 
 ```bash
-cp ~/.config/nvim/lua/config/languages_local.lua.example \
-   ~/.config/nvim/lua/config/languages_local.lua
+cp lua/config/languages_local.lua.example lua/config/languages_local.lua
 ```
 
 ## Quick version
@@ -31,7 +30,7 @@ cp ~/.config/nvim/lua/config/languages_local.lua.example \
 ## 1. Prerequisites
 
 Mason downloads or builds tools with your system toolchains. Install what
-your languages need first:
+your languages need first (`:checkhealth elite` shows what is missing):
 
 | Needed for | Install |
 | --- | --- |
@@ -112,9 +111,10 @@ Also try `K`, `gd`, `<leader>cf` and completion.
 - **Replace a default:** use the same filetype key in `languages_local.lua`;
   yours wins.
 - **Disable a default:** `rust = false,`
-- **Uninstall:** removing an entry does not delete anything. Run `:Mason` and
-  press `X` on the package. Note that any server installed in Mason is
-  enabled automatically, so it stays active until uninstalled.
+- **Uninstall:** removing an entry stops that server from being enabled, but
+  does not delete anything. Run `:Mason` and press `X` on the package to remove
+  it from disk. Servers that are installed in Mason but not in the table stay
+  off.
 - **Server settings:** in `plugins/lsp.lua`, in the lspconfig `config`
   function: `vim.lsp.config("gopls", { settings = { gopls = { staticcheck = true } } })`
 
@@ -145,7 +145,7 @@ install it with the language's own toolchain.
 | Symptom | Likely cause |
 | --- | --- |
 | Server missing in `:Mason` | Wrong lspconfig name in `lsp`, or missing Node/Python/Go (section 1); read `:MasonLog` |
-| Installed but not attached | Wrong filetype key (`:set ft?`), or file is outside a project root the server recognises |
+| Installed but not attached | Wrong filetype key (`:set ft?`), not in the language table, or file is outside a project root the server recognises |
 | `<leader>cf` does nothing | Formatter not installed (`:ConformInfo`) or wrong Conform name |
 | No colors | Wrong parser name (`:TSInstallInfo`), or run `:checkhealth nvim-treesitter` |
 | Highlighting but no IntelliSense | Only a parser is listed (or `auto_install` fetched it); add `lsp` |

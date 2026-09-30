@@ -71,6 +71,8 @@ local function generate_lines()
         "| Search and run Ex commands | `<leader>fc` |",
         "| Open this cheatsheet | `<leader>fC` or `:Cheatsheet` |",
         "| Force regeneration | `:CheatsheetUpdate` |",
+        "| Check your setup | `:checkhealth elite` |",
+        "| How this config was installed | `:EliteInfo` |",
         "| Built-in Neovim/Vim documentation | `:help` |",
         "| Search built-in documentation | `<leader>fh` |",
         "",
@@ -166,11 +168,16 @@ local function generate_lines()
     return lines
 end
 
-function M.generate()
-    local docs = vim.fn.stdpath("config") .. "/docs"
-    vim.fn.mkdir(docs, "p")
+-- The cheatsheet lives in Neovim's state folder, not in the repo: it contains
+-- machine-specific paths and changes on every start, which would keep git dirty.
+function M.path()
+    return vim.fn.stdpath("state") .. "/cheatsheet.md"
+end
 
-    local path = docs .. "/cheatsheet.md"
+function M.generate()
+    local path = M.path()
+    vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+
     local file = assert(io.open(path, "w"))
     file:write(table.concat(generate_lines(), "\n"))
     file:write("\n")

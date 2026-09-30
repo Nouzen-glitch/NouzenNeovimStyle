@@ -2,17 +2,25 @@
 
 Custom bindings from `lua/config/keymaps.lua` and plugin configs. Leader is
 **Space**. For the live, complete list (including built-ins and plugin
-defaults) use `<leader>?`, `<leader>fk`, or [cheatsheet.md](cheatsheet.md).
+defaults) use `<leader>?`, `<leader>fk`, or the generated cheatsheet
+(`<leader>fC` / `:Cheatsheet`). Your own bindings go in `lua/user/keymaps.lua`
+([MIGRATING.md](MIGRATING.md)).
 
 ## Fundamentals
 
 | Key | Mode | Action |
 | --- | --- | --- |
 | `jk` | i, t | Leave Insert / Terminal mode |
-| Arrow keys | n, i, v | Disabled (`<Nop>`) |
+| Arrow keys | n, i, v | Disabled (`<Nop>`). Opt out: `vim.g.elite_disable_arrows = false` in `lua/user/options.lua` |
 | `j` / `k` | n | Move by display line (wrapped lines) |
 | `n` / `N` | n | Next / previous search result, centered |
 | `<` / `>` | v | Indent and keep selection |
+| `<Esc>` | n | Clear search highlight |
+| `<C-s>` | n | Save file |
+| `<leader>q` | n | Quit window |
+| `<C-d>` / `<C-u>` | n | Half page down / up, cursor centered |
+| `J` / `K` | v | Move selected lines down / up |
+| `p` | x | Paste over a selection without losing what you yanked |
 
 ## Windows and buffers
 
@@ -22,7 +30,7 @@ defaults) use `<leader>?`, `<leader>fk`, or [cheatsheet.md](cheatsheet.md).
 | `<leader>wv` / `<leader>ws` | Vertical / horizontal split |
 | `<leader>wd` | Close window |
 | `<leader>ww` | Cycle windows |
-| `H` / `L` | Previous / next buffer |
+| `H` / `L` | Previous / next buffer (open buffers are shown along the top) |
 | `<leader>bd` | Delete buffer |
 
 ## LSP
@@ -36,7 +44,7 @@ defaults) use `<leader>?`, `<leader>fk`, or [cheatsheet.md](cheatsheet.md).
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action (n, v) |
 | `<leader>ih` | Toggle inlay hints |
-| `<C-h>` (insert) | Signature help |
+| `<C-s>` (insert) | Signature help (Neovim built-in) |
 
 Neovim 0.11+ also provides defaults: `grn` rename, `gra` code action, `grr`
 references, `gri` implementation, `grt` type definition, `gO` symbols,
@@ -100,8 +108,9 @@ Command-line (`:` and `/`) also has completion.
 ## Text objects and editing
 
 `mini.ai` extends `a`/`i` objects (arguments, function calls, quotes,
-brackets). Built-ins used constantly: `ciw`, `ci"`, `ci(`, `da{`, `yiw`.
-`gcc` toggles a comment, `gc` + motion/selection comments a range.
+brackets). `mini.pairs` closes brackets and quotes as you type. Built-ins used
+constantly: `ciw`, `ci"`, `ci(`, `da{`, `yiw`. `gcc` toggles a comment, `gc` +
+motion/selection comments a range.
 
 ## Leader namespaces
 
@@ -114,7 +123,7 @@ brackets). Built-ins used constantly: `ciw`, `ci"`, `ci(`, `da{`, `yiw`.
 1. Insert/leave (`i a o`, `jk`), `hjkl`, `w b e`, `0 ^ $`, `dd yy p u <C-r>`
 2. Operators plus text objects: `d c y` with `iw aw i" i( i{`
 3. Navigation: `<leader>ff`, `<leader>fg`, `gd`, `gr`, `K`
-4. Completion: `Tab`, `<C-Space>`, `<C-j/k>`, `<C-h>`
+4. Completion: `Tab`, `<C-Space>`, `<C-j/k>`, `<C-s>` for signatures
 5. Refactoring: `<leader>rn`, `<leader>ca`, `gi`
 6. Git hunks, Trouble, formatting, then anything advanced
 
