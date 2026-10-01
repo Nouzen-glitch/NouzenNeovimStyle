@@ -61,6 +61,10 @@ Never edit shipped files; that blocks updates. Your changes go in
 If a key of yours replaces a shipped key, you are told once at startup;
 `:EliteKeys` lists them. See [MIGRATING.md](MIGRATING.md) for details.
 
+Optional features (session restore, a start screen, Docker, database and REST
+clients, debugging) are off until you enable them: `:EliteExtras` lists them,
+[EXTRAS.md](EXTRAS.md) explains each.
+
 ## 5. Keep your files safe (the step people forget)
 
 `lua/user/` is **not in git**, so a fresh clone does not contain it.

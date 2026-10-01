@@ -143,6 +143,23 @@ function M.check()
     end
     h.info("Another machine: scripts/user-layer.sh export FILE here, import FILE there.")
     h.info("Never delete or re-clone the repo folder before exporting: lua/user/ is not in git.")
+
+    h.start("Elite: extras (opt-in)")
+    local extras = require("util.extras")
+    local on, unknown = extras.requested()
+    if #on == 0 and #unknown == 0 then
+        h.info("No extras enabled. :EliteExtras lists them; docs/EXTRAS.md explains how to enable one.")
+    end
+    for _, name in ipairs(unknown) do
+        h.warn("Unknown extra in vim.g.elite_extras: " .. name, "Available: " .. table.concat(extras.order, ", "))
+    end
+    for _, name in ipairs(on) do
+        h.ok(name .. " enabled")
+        local fn = extras.registry[name].health
+        if fn then
+            fn({ h = h, check_tool = check_tool, has = has })
+        end
+    end
 end
 
 return M

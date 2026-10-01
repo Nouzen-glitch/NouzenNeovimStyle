@@ -128,6 +128,7 @@ local function generate_lines()
         "| Short practice tutorial | `:EliteTutor` |",
         "| Create/open your own options, keymaps, plugins, languages | `:EliteEdit {options,keymaps,plugins,languages}` |",
         "| Shipped keys your keymaps replaced | `:EliteKeys` |",
+        "| Opt-in features (sessions, dashboard, docker, ...) | `:EliteExtras` |",
         "| Save your personal files (they are not in git) | `:EliteBackup` |",
         "| Open this cheatsheet | `<leader>fC` or `:Cheatsheet` |",
         "| Force regeneration | `:CheatsheetUpdate` |",

@@ -19,7 +19,7 @@ if [[ -z "${NVIM_APPNAME:-}" ]]; then
 fi
 
 nvim --headless \
-  "+lua for _, m in ipairs({'util.keyguard','util.guide','util.welcome','util.cheatsheet','config.leader_groups','elite.health'}) do assert(pcall(require, m), 'failed to load ' .. m) end" \
+  "+lua for _, m in ipairs({'util.keyguard','util.guide','util.welcome','util.cheatsheet','config.leader_groups','util.extras','elite.health'}) do assert(pcall(require, m), 'failed to load ' .. m) end" \
   "+lua assert(#require('util.guide').help_lines() > 0 and #require('util.guide').tutor_lines() > 0)" \
   "+lua print('keys: ' .. table.concat(require('util.keyguard').report_lines(), ' | '))" \
   "+lua print('cheatsheet: ' .. require('util.cheatsheet').generate())" \

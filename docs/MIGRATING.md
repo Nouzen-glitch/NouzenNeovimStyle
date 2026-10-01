@@ -58,6 +58,7 @@ they are read while the config loads.
 | `vim.g.elite_disable_arrows = false` | arrows disabled | Re-enable the arrow keys in normal, insert and visual mode. |
 | `vim.g.elite_leader_groups = { g = "Git" }` | none | Names for your own `<leader>` prefixes in which-key and the cheatsheet. |
 | `vim.g.elite_hide_notices = true` | notices shown | Hide the one-time welcome notice for hand-cloned configs. |
+| `vim.g.elite_extras = { "sessions", "dap" }` | none | Enable opt-in features. `:EliteExtras` lists them; see [EXTRAS.md](EXTRAS.md). |
 | `vim.g.elite_lockfile_in_repo = true` | personal lockfile | Track plugin versions in the repo's `lazy-lock.json` instead of a personal copy. For maintainers who commit it. See [INSTALL.md](INSTALL.md) section 8. |
 
 Everything else is an ordinary Neovim option, for example
@@ -159,3 +160,5 @@ prefer git, you can also fork the repo and remove the personal-file lines from
 | `:EliteEdit {options,keymaps,plugins,languages}` | Create (from the example) and open a personal file |
 | `:EliteKeys` | Shipped keys your keymaps replaced, removed or delayed |
 | `:EliteBackup [file]` | Export your personal files (they are not in git) |
+| `:EliteExtras` | List opt-in extras and which are enabled |
+| `:EliteRest` | Run the HTTP request under the cursor (`rest` extra only) |

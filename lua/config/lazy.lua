@@ -22,6 +22,17 @@ vim.opt.rtp:prepend(lazypath)
 -- an error when an imported folder has no specs, so only import it once it
 -- contains a plugin file.
 local spec = { { import = "plugins" } }
+
+-- Opt-in extras (vim.g.elite_extras, set in lua/user/options.lua). Each extra
+-- that ships a plugin spec is imported only when enabled; see util/extras.lua.
+local extras = require("util.extras")
+for _, name in ipairs(extras.enabled()) do
+    if extras.registry[name].plugins then
+        table.insert(spec, { import = "extras." .. name })
+    end
+end
+extras.warn_unknown()
+
 local user_plugins = vim.fn.stdpath("config") .. "/lua/user/plugins"
 if #vim.fn.glob(user_plugins .. "/**/*.lua", false, true) > 0 then
     table.insert(spec, { import = "user.plugins" })

@@ -4,8 +4,9 @@ Everything about putting this config on a machine, keeping it current, and
 taking it off again. Customizing it and bringing your own config along is in
 [MIGRATING.md](MIGRATING.md).
 
-Supported: Linux (developed on Fedora). Windows is not supported yet and macOS is untested: the
-scripts rely on GNU tools (`date -Is`).
+Supported: Linux (developed on Fedora). On Windows use **WSL 2** with a Linux distribution
+(install and run everything inside WSL; use a Nerd Font in the Windows terminal). A native Windows
+installer does not exist, and macOS is untested: the scripts rely on GNU tools (`date -Is`).
 
 ## 1. Quick start
 

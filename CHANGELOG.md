@@ -2,6 +2,27 @@
 
 Newest first. `scripts/update.sh` prints the new entries when you update.
 
+## 2026-10-01
+
+### Added
+- **Extras**: opt-in features, all off by default. Enable in `lua/user/options.lua`, for example `vim.g.elite_extras = { "sessions", "dashboard" }`. `:EliteExtras` lists them; unknown names only warn. New `docs/EXTRAS.md`.
+  - `sessions` (persistence.nvim): `<leader>ss` restore this folder, `<leader>sl` last session, `<leader>sd` do not save. Never restores by itself.
+  - `dashboard` (alpha-nvim): start screen for a bare `nvim` only.
+  - `docker`: `<leader>kk` opens lazydocker in a floating terminal (no plugin).
+  - `database` (vim-dadbod, vim-dadbod-ui): `<leader>kd`, SQL completion in SQL buffers.
+  - `rest`: `<leader>kr` / `:EliteRest` runs the `.http` request under the cursor with curl (built in; kulala.nvim now needs a downloaded binary and the tree-sitter CLI).
+  - `dap` (nvim-dap, nvim-dap-ui): `<leader>tb` `tc` `tu` `tx`, `<F5>` `<F9>` `<F10>` `<F11>` `<S-F11>`; Mason installs debugpy, codelldb and js-debug-adapter. Extra adapters via `User EliteDapSetup`.
+- `:checkhealth elite` has an extras section (missing tools are warnings).
+- WSL 2 is documented as the way to use this config on Windows.
+
+### Fixed
+- `lazy-lock.json` now lists `mini.pairs` and the extras' plugins.
+
+### Upgrade notes
+- Nothing is required: with `vim.g.elite_extras` unset nothing changes.
+- To use an extra, add it to `vim.g.elite_extras` in `lua/user/options.lua` and restart; new plugins install automatically. Run `:checkhealth elite` for missing tools.
+- If you commit `lazy-lock.json` yourself (`vim.g.elite_lockfile_in_repo = true`), run `:Lazy` once with the extras you want and commit it.
+
 ## 2026-09-30
 
 ### Added

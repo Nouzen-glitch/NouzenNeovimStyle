@@ -27,6 +27,18 @@ Paths are relative to `lua/`. Plugin specs live in `plugins/`.
 | nvim-web-devicons | Icons | `plugins/ui.lua` |
 | toggleterm.nvim | Integrated terminal | `plugins/terminal.lua` |
 
+### Extras (off by default, `vim.g.elite_extras`, see [EXTRAS.md](EXTRAS.md))
+
+| Extra | Components | Configured in |
+| --- | --- | --- |
+| sessions | persistence.nvim | `extras/sessions.lua` |
+| dashboard | alpha-nvim | `extras/dashboard.lua` |
+| docker | toggleterm + lazydocker (no new plugin) | `util/extras.lua` |
+| database | vim-dadbod, vim-dadbod-ui, vim-dadbod-completion | `extras/database.lua` |
+| rest | built-in curl runner (no plugin) | `util/rest.lua` |
+| dap | nvim-dap, nvim-dap-ui, nvim-nio; adapters via mason-tool-installer | `extras/dap.lua` |
+
+
 Non-plugin code: `config/languages.lua` (language table) with
 `util/languages.lua` (derives plugin lists), `util/cheatsheet.lua`
 (generator, started from `init.lua`), `config/leader_groups.lua` (namespace

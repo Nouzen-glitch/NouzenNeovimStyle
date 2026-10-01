@@ -4,7 +4,7 @@ A structured Neovim configuration that keeps Vim's modal editing and adds the
 parts of VS Code that matter for programming: LSP IntelliSense, diagnostics,
 completion, fuzzy finding, git hunks, formatting, and an integrated terminal.
 
-Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
+Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora). On Windows, use WSL 2.
 
 ## Docs
 
@@ -17,6 +17,7 @@ Targets Neovim 0.11+ (currently running 0.12.x) on Linux (developed on Fedora).
 | [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md) | Adding a language: one line, nothing installed unless listed |
 | [COMPONENTS.md](COMPONENTS.md) | What each plugin/tool is and which file configures it |
 | [ENVIRONMENT_GUIDE.md](ENVIRONMENT_GUIDE.md) | Maintaining the config: workflow, git, cheatsheet automation, known issues |
+| [EXTRAS.md](EXTRAS.md) | Opt-in features: sessions, dashboard, docker, database, REST, debugging |
 | [../CHANGELOG.md](../CHANGELOG.md) | What changed, newest first (`scripts/update.sh` prints new entries) |
 
 The live cheatsheet is **generated** from the running editor (`<leader>fC` or
@@ -111,6 +112,7 @@ First launch checklist:
     │   ├── completion.lua  formatting.lua  git.lua  lsp.lua
     │   ├── telescope.lua  terminal.lua  textobjects.lua
     │   └── treesitter.lua  ui.lua
+    ├── extras/               opt-in feature specs: sessions, dashboard, database, dap (see docs/EXTRAS.md)
     ├── user/                 YOUR options, keymaps and plugins (gitignored; *.example files show how)
     ├── elite/
     │   └── health.lua        :checkhealth elite
@@ -120,7 +122,9 @@ First launch checklist:
         ├── lockfile.lua      personal plugin lockfile (:EliteLockReset)
         ├── user.lua          loads your lua/user/ files, reports errors in them
         ├── keyguard.lua      reports shipped keys your keymaps replace (:EliteKeys)
-        ├── guide.lua         :EliteHelp, :EliteTutor, :EliteEdit, :EliteBackup
+        ├── guide.lua         :EliteHelp, :EliteTutor, :EliteEdit, :EliteBackup, :EliteExtras
+        ├── extras.lua        registry of opt-in extras, their keys and checks
+        ├── rest.lua          .http request runner for the rest extra
         └── welcome.lua       first-run install window, :EliteInfo
 ```
 
@@ -144,6 +148,7 @@ Where to change things:
 | Syntax highlighting | `plugins/treesitter.lua` |
 | Git signs | `plugins/git.lua` |
 | Text objects, auto-pairs, which-key | `plugins/textobjects.lua` |
+| Opt-in features (sessions, dashboard, docker, database, rest, dap) | `vim.g.elite_extras` in `lua/user/options.lua`; specs in `extras/`, registry in `util/extras.lua` |
 
 ## Day-one essentials
 
@@ -175,8 +180,10 @@ Full list: [KEYBINDINGS.md](KEYBINDINGS.md).
 
 ## Not included (yet)
 
-DAP debugging, AI assistants, database/REST/Docker clients, persistent
-terminal sessions (tmux/zellij-style detach and reattach), dashboards,
-session restore, a Windows installer.
+AI assistants (the vendor is your choice), built-in persistent terminal
+sessions (run Neovim inside tmux or zellij, see [EXTRAS.md](EXTRAS.md)) and a
+native Windows installer (use WSL, see [INSTALL.md](INSTALL.md)).
+Session restore, a dashboard, Docker, database and REST clients and DAP
+debugging exist as opt-in [extras](EXTRAS.md) (`vim.g.elite_extras`).
 Multiple numbered terminals are supported via toggleterm (`2<C-\>`, `:TermSelect`).
-Anything from this list can be added through `lua/user/plugins/`.
+Anything else can be added through `lua/user/plugins/`.

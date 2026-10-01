@@ -27,14 +27,17 @@ init.lua
  ├─ user.options         (yours, optional)
  ├─ config.keymaps
  ├─ user.keymaps         (yours, optional)
+ │                       (config.keymaps is followed by util.extras.keymaps(): keys of enabled extras)
  ├─ config.autocmds
- ├─ config.lazy ──► lazy.nvim ──► plugins/*.lua, then user/plugins/*.lua
+ ├─ config.lazy ──► lazy.nvim ──► plugins/*.lua, extras/<name>.lua for each name in
+ │                  vim.g.elite_extras, then user/plugins/*.lua
  │                  (lockfile path from util.lockfile; user/plugins only
  │                   imported once it contains a .lua file)
  ├─ util.cheatsheet.setup()
  ├─ util.lockfile.setup()      :EliteLockReset
  ├─ util.welcome.setup()       first-run window, :EliteInfo
  ├─ util.guide.setup()         :EliteHelp, :EliteTutor, :EliteEdit, :EliteBackup
+ ├─ util.extras.setup()        commands of enabled extras (:EliteRest)
  └─ util.keyguard.setup()      :EliteKeys, one-time "keys replaced" notice
 ```
 
@@ -105,6 +108,7 @@ automatically. Full guide: [ADDING_LANGUAGES.md](ADDING_LANGUAGES.md).
 | `:EliteEdit {options,keymaps,plugins,languages}` | Create and open a personal file |
 | `:EliteKeys` | Shipped keys the user's keymaps replaced |
 | `:EliteBackup [file]` | Export personal files |
+| `:EliteExtras` | Opt-in extras and which are enabled |
 
 ## 7. Cheatsheet automation
 
@@ -170,6 +174,13 @@ the watcher mainly helps with edits made outside Neovim to top-level files.
 | Leader groups | `config/leader_groups.lua:all()` merges `vim.g.elite_leader_groups`; use `all()`, not `.groups`, in new code |
 | Safety copies | `scripts/user-layer.sh backup` writes to `<XDG_STATE_HOME>/elite-backups`; `util/guide.lua:backup_dir()` and `elite/health.lua` assume that same path |
 | Hand-cloned configs | No install record means `util/welcome.lua` shows a one-time notice (marker file `elite-manual-notice-shown`) |
+| Extras | `util/extras.lua` is the registry (name, description, groups, keys, setup, health). `plugins = true` means `lua/extras/<name>.lua` exists and is imported by `config/lazy.lua` only when enabled (lazy prints an error for an import with no specs, so plugin-free extras have no file). Adding an extra: registry entry, optional spec file, a row in `docs/EXTRAS.md`, `COMPONENTS.md`, `KEYBINDINGS.md` |
+| Extra keys | Defined in the registry's `keys(map)` and called from `init.lua` inside `keyguard.track_shipped`, so a user key on the same lhs is reported by `:EliteKeys`. Do not use lazy `keys = {}` in extra specs (invisible to keyguard). Groups of an extra are added by `leader_groups.all()` only while it is enabled |
+| Extra: mason-tool-installer | `extras/dap.lua` extends the shipped `ensure_installed` with `opts = function(_, opts) ... end` (checked: the shipped list is kept and the adapters are appended) |
+| Extra: sessions | `sessionoptions` omits `terminal`; nvim-tree is closed on `PersistenceSavePre`; `setup` is skipped when no UI is attached so headless runs never write a session |
+| Extra: docker | `util/extras.lua:tui()` removes toggleterm's Terminal-mode `jk`/`<Esc>`/`<C-h/j/k/l>` buffer maps (set by the `FileType toggleterm` autocmd) in `on_open`, so the TUI receives them |
+| Extra: dap | Adapters are looked up under `stdpath("data")/mason`. The `User EliteDapSetup` event lets users add configurations from `lua/user/options.lua` |
+| Extra: rest | Own runner (`util/rest.lua`), because kulala.nvim now needs a downloaded binary with a license prompt and the `tree-sitter` CLI |
 | Installer record | `scripts/install.sh` writes `<state>/elite-install-info`; `util/welcome.lua` and `scripts/uninstall.sh` read it. Keep the `key=value` format in sync if you change either side |
 
 ## 9. Mental model

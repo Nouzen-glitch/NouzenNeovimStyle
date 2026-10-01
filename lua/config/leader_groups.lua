@@ -17,6 +17,8 @@ M.groups = {
 -- (a list of { key = "g", label = "Git" } tables works too). Yours win.
 function M.all()
     local out = vim.deepcopy(M.groups)
+    -- Groups of the enabled extras (util/extras.lua) appear only while enabled.
+    vim.list_extend(out, require("util.extras").groups())
     local extra = vim.g.elite_leader_groups
     if type(extra) ~= "table" then
         return out

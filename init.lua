@@ -10,7 +10,10 @@ require("config.options")
 user.load("user.options")
 -- keyguard watches vim.keymap.set while these two files load, so it can tell
 -- you which shipped keys your own keymaps replace (:EliteKeys).
-keyguard.track_shipped(function() require("config.keymaps") end)
+keyguard.track_shipped(function()
+    require("config.keymaps")
+    require("util.extras").keymaps() -- keys of enabled extras, tracked like shipped keys
+end)
 keyguard.track_user(function() user.load("user.keymaps") end)
 require("config.autocmds")
 require("config.lazy")
@@ -18,4 +21,5 @@ require("util.cheatsheet").setup()
 require("util.lockfile").setup()
 require("util.welcome").setup()
 require("util.guide").setup()
+require("util.extras").setup()
 keyguard.setup()

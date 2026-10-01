@@ -150,6 +150,9 @@ motion/selection comments a range.
 `f` Find, `w` Windows, `x` Diagnostics list, `h` Git hunks,
 `b` Buffers, `c` Code (actions, format), `d` Diagnostic details (and `<leader>ds` document symbols),
 `i` Inlay hints, `r` Rename. Press `<leader>` and wait for which-key.
+Enabled [extras](EXTRAS.md) add `s` Session, `k` Clients (`kk` docker, `kd` database,
+`kr` REST) and `t` Debug (`tb` `tc` `tu` `tx`, plus `<F5>` `<F9>` `<F10>` `<F11>` `<S-F11>`).
+They exist only while the extra is enabled in `vim.g.elite_extras`.
 
 ## Learning order
 

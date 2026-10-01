@@ -33,6 +33,7 @@ function M.help_lines()
         "  :EliteEdit plugins     your plugins, or tweaks to shipped ones",
         "  :EliteEdit languages   add a language (server, parser, formatter)",
         "  :EliteKeys             shipped keys your keymaps replaced or delayed",
+        "  :EliteExtras           opt-in features (sessions, dashboard, docker, database, rest, dap)",
         "",
         "KEEP YOUR FILES SAFE (lua/user/ is yours and is NOT in git)",
         "  Save them:  :EliteBackup   or   scripts/user-layer.sh export FILE",
@@ -204,6 +205,10 @@ function M.setup()
             return { "options", "keymaps", "plugins", "languages" }
         end,
     })
+
+    vim.api.nvim_create_user_command("EliteExtras", function()
+        require("util.welcome").show(require("util.extras").lines(), "Extras")
+    end, { desc = "List opt-in extras and which are enabled" })
 
     vim.api.nvim_create_user_command("EliteBackup", backup, {
         nargs = "?",
