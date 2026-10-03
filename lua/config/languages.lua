@@ -24,16 +24,16 @@ return {
     rust = { lsp = "rust_analyzer", parser = "rust", formatter = "rustfmt" },
 
     sh   = { lsp = "bashls", parser = "bash", formatter = "shfmt", tools = { "shfmt" } },
-    bash = { parser = "bash", formatter = "shfmt" },
+    bash = { parser = "bash", formatter = "shfmt", tools = { "shfmt" } },
 
     javascript      = { lsp = "ts_ls", parser = "javascript", formatter = "prettier", tools = { "prettier" } },
-    javascriptreact = { parser = "javascript", formatter = "prettier" },
+    javascriptreact = { parser = "javascript", formatter = "prettier", tools = { "prettier" } },
     typescript      = { lsp = "ts_ls", parser = "typescript", formatter = "prettier", tools = { "prettier" } },
-    typescriptreact = { parser = "tsx", formatter = "prettier" },
+    typescriptreact = { parser = "tsx", formatter = "prettier", tools = { "prettier" } },
 
-    json     = { parser = "json", formatter = "prettier" },
-    yaml     = { parser = "yaml", formatter = "prettier" },
-    markdown = { parser = { "markdown", "markdown_inline" }, formatter = "prettier" },
+    json     = { parser = "json", formatter = "prettier", tools = { "prettier" } },
+    yaml     = { parser = "yaml", formatter = "prettier", tools = { "prettier" } },
+    markdown = { parser = { "markdown", "markdown_inline" }, formatter = "prettier", tools = { "prettier" } },
 
     vim = { parser = { "vim", "vimdoc" } },
 }

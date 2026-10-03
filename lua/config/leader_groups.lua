@@ -7,7 +7,7 @@ M.groups = {
     { key = "h", label = "Git Hunks" },
     { key = "b", label = "Buffers" },
     { key = "c", label = "Code / LSP" },
-    { key = "d", label = "Diagnostic Details" },
+    { key = "d", label = "Diagnostics / symbols" },
     { key = "i", label = "Inlay Hints" },
     { key = "r", label = "Rename" },
 }

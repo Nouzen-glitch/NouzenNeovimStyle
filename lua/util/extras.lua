@@ -41,6 +41,7 @@ M.registry = {
     docker = {
         desc = "lazydocker in a floating terminal (no plugin; needs docker and lazydocker)",
         plugins = false,
+        parsers = { "dockerfile" },
         groups = { { key = "k", label = "Clients" } },
         keys = function(map)
             map("n", "<leader>kk", function() M.tui("lazydocker") end, { desc = "Docker (lazydocker)" })
@@ -54,6 +55,7 @@ M.registry = {
     database = {
         desc = "Database UI and SQL completion (vim-dadbod, vim-dadbod-ui)",
         plugins = true,
+        parsers = { "sql" },
         groups = { { key = "k", label = "Clients" } },
         keys = function(map)
             map("n", "<leader>kd", "<cmd>DBUIToggle<cr>", { desc = "Database UI" })
@@ -71,6 +73,7 @@ M.registry = {
     rest = {
         desc = "Run requests from .http files with curl (built in, no plugin)",
         plugins = false,
+        parsers = { "http" },
         groups = { { key = "k", label = "Clients" } },
         keys = function(map)
             map("n", "<leader>kr", function() require("util.rest").run() end, { desc = "Run HTTP request under cursor" })

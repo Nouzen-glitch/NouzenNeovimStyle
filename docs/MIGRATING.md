@@ -161,4 +161,5 @@ prefer git, you can also fork the repo and remove the personal-file lines from
 | `:EliteKeys` | Shipped keys your keymaps replaced, removed or delayed |
 | `:EliteBackup [file]` | Export your personal files (they are not in git) |
 | `:EliteExtras` | List opt-in extras and which are enabled |
+| `:EliteFormat on\|off\|status` | Turn format on save on or off for this session (`<leader>cf` always formats) |
 | `:EliteRest` | Run the HTTP request under the cursor (`rest` extra only) |

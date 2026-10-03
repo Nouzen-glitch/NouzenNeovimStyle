@@ -62,6 +62,15 @@ function M.check()
     check_tool("rg", h.warn, "Install ripgrep: needed for <leader>fg (live grep).")
     check_tool("curl", h.warn, "Needed by Mason.")
     check_tool("unzip", h.warn, "Needed by Mason.")
+    local ok_cb, cb = pcall(function() return vim.fn["provider#clipboard#Executable"]() end)
+    if ok_cb and cb ~= "" then
+        h.ok("Clipboard provider: " .. cb)
+    else
+        h.warn("No clipboard provider found", {
+            "This config uses the system clipboard (clipboard=unnamedplus), so yank and paste need a tool.",
+            "Install wl-clipboard (Wayland) or xclip (X11), e.g.: sudo dnf install wl-clipboard xclip",
+        })
+    end
 
     h.start("Elite: language server toolchains (Mason)")
     check_tool("node", h.warn, "Needed for ts_ls, prettier and other npm-based tools.")
@@ -144,6 +153,16 @@ function M.check()
     h.info("Another machine: scripts/user-layer.sh export FILE here, import FILE there.")
     h.info("Never delete or re-clone the repo folder before exporting: lua/user/ is not in git.")
 
+    h.start("Elite: language table")
+    local lang_problems = require("util.languages").problems()
+    if #lang_problems == 0 then
+        h.ok("config/languages.lua (and languages_local.lua) look valid")
+    else
+        for _, p in ipairs(lang_problems) do
+            h.warn("Language table: " .. p)
+        end
+    end
+ 
     h.start("Elite: extras (opt-in)")
     local extras = require("util.extras")
     local on, unknown = extras.requested()

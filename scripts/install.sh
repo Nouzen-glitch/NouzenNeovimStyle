@@ -93,6 +93,10 @@ done
 if ! { command -v cc >/dev/null 2>&1 || command -v gcc >/dev/null 2>&1 || command -v clang >/dev/null 2>&1; }; then
     missing+=("a C compiler (gcc)")
 fi
+if ! { command -v wl-copy >/dev/null 2>&1 || command -v xclip >/dev/null 2>&1 \
+    || command -v xsel >/dev/null 2>&1 || command -v win32yank.exe >/dev/null 2>&1; }; then
+    missing+=("a clipboard tool (wl-clipboard or xclip)")
+fi
 if ((${#missing[@]})); then
     warn "Not found: ${missing[*]}"
     say "  The config still installs, but some features will not work until these"

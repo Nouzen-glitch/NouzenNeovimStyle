@@ -43,7 +43,7 @@ vim.opt.confirm = true          -- ask instead of failing on :q with unsaved cha
 vim.opt.inccommand = "split"    -- live preview for :s substitutions
 vim.opt.winborder = "rounded"   -- consistent borders on floating windows (0.11+)
 
--- Keep folds closed only when explicitly requested.
+-- Folds are manual: zf creates one, za toggles it. There is no automatic folding.
 vim.opt.foldmethod = "manual"
 
 -- Arrow keys are disabled on purpose to learn real Vim movement.

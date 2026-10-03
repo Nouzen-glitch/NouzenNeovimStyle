@@ -34,7 +34,13 @@ end
 local function collect(field)
     local items = {}
     for _, cfg in pairs(load()) do
-        vim.list_extend(items, as_list(cfg[field]))
+        if type(cfg) == "table" then
+            for _, item in ipairs(as_list(cfg[field])) do
+                if type(item) == "string" then -- bad values are reported by M.problems()
+                    items[#items + 1] = item
+                end
+            end
+        end
     end
     table.sort(items)
 
@@ -55,11 +61,39 @@ function M.tools() return collect("tools") end
 function M.formatters_by_ft()
     local out = {}
     for ft, cfg in pairs(load()) do
-        if cfg.formatter then
+        if type(cfg) == "table" and cfg.formatter then
             out[ft] = as_list(cfg.formatter)
         end
     end
     return out
 end
 
+-- Human-readable problems in the language table (typos, wrong types).
+-- Shown by :checkhealth elite; startup keeps working without the bad values.
+local FIELDS = { lsp = true, parser = true, formatter = true, tools = true }
+ 
+function M.problems()
+    local out = {}
+    for ft, cfg in pairs(load()) do
+        if type(cfg) ~= "table" then
+            out[#out + 1] = string.format('%s: the entry must be a table (use "%s = false" to disable a language)', ft, ft)
+        else
+            for key, value in pairs(cfg) do
+                if not FIELDS[key] then
+                    out[#out + 1] = string.format('%s: unknown field "%s" (use lsp, parser, formatter, tools)', ft, tostring(key))
+                else
+                    for _, item in ipairs(as_list(value)) do
+                        if type(item) ~= "string" then
+                            out[#out + 1] = string.format("%s.%s: values must be strings", ft, key)
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+    table.sort(out)
+    return out
+end
+ 
 return M

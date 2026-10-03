@@ -22,15 +22,17 @@ return {
             group = vim.api.nvim_create_augroup("EliteTerminal", { clear = true }),
             pattern = "toggleterm",
             callback = function(args)
-                local o = { buffer = args.buf }
-                vim.keymap.set("t", "jk", [[<C-\><C-n>]], { buffer = args.buf, desc = "Exit terminal mode" })
-                -- Esc switches to Normal mode (scroll, search, window navigation).
-                vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], o)
+                local function t(lhs, rhs, desc)
+                    vim.keymap.set("t", lhs, rhs, { buffer = args.buf, desc = desc })
+                end
+                -- Esc and jk switch to Normal mode (scroll, search, window navigation).
+                t("jk", [[<C-\><C-n>]], "Terminal: back to Normal mode")
+                t("<Esc>", [[<C-\><C-n>]], "Terminal: back to Normal mode")
                 -- Move out of the terminal window.
-                vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], o)
-                vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-w>j]], o)
-                vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-w>k]], o)
-                vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], o)
+                t("<C-h>", [[<C-\><C-n><C-w>h]], "Terminal: focus left window")
+                t("<C-j>", [[<C-\><C-n><C-w>j]], "Terminal: focus lower window")
+                t("<C-k>", [[<C-\><C-n><C-w>k]], "Terminal: focus upper window")
+                t("<C-l>", [[<C-\><C-n><C-w>l]], "Terminal: focus right window")
             end,
         })
     end,

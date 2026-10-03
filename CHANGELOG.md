@@ -2,6 +2,27 @@
 
 Newest first. `scripts/update.sh` prints the new entries when you update.
 
+## 2026-10-03
+ 
+### Added
+- `:EliteFormat on|off|status` turns format on save on or off for the session.
+- `<leader>E` reveals the current file in the explorer.
+- Clearer key descriptions (they now say what happens), a which-key section in `docs/KEYBINDINGS.md` and in `:EliteHelp`.
+- `:checkhealth elite` checks for a clipboard provider and validates the language table.
+ 
+### Fixed
+- `j`/`k` keep working with counts (`5j` moves 5 real lines).
+- `prettier` (and `shfmt` for `bash`) are installed even if the language that used to own them is disabled.
+- Terminal-mode keys have descriptions; cursor restore skips help, rebase and other special buffers.
+- `:EliteEdit` completion filters what you typed; a bad language-table value no longer crashes startup.
+- Cheatsheet: no `<Plug>` maps, atomic writes, generated just after startup.
+- `rest` extra asks for confirmation before sending environment variables.
+- Extras install the parsers they need (`sql`, `http`, `dockerfile`).
+- Docs: README layout lists `EXTRAS.md`, clipboard tool added to requirements, fold comment corrected.
+ 
+### Upgrade notes
+- Nothing is required. Restart Neovim. Install `wl-clipboard` or `xclip` if `:checkhealth elite` reports no clipboard provider.
+ 
 ## 2026-10-01
 
 ### Added

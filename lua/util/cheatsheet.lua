@@ -25,7 +25,7 @@ local function get_keymaps()
         if ok then
             for _, map in ipairs(list) do
                 local id = table.concat({ map.mode or "", map.lhsraw or map.lhs or "", map.desc or "" }, "\0")
-                if not seen[id] then
+                if not seen[id] and not (map.lhs or ""):match("^<Plug>") then
                     seen[id] = true
                     table.insert(maps, map)
                 end
@@ -276,10 +276,13 @@ function M.generate()
     local path = M.path()
     vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
 
-    local file = assert(io.open(path, "w"))
+    -- Write a temp file, then rename, so two Neovims never leave a half-written sheet.
+    local tmp = path .. "." .. vim.uv.os_getpid() .. ".tmp"
+    local file = assert(io.open(tmp, "w"))
     file:write(table.concat(generate_lines(), "\n"))
     file:write("\n")
     file:close()
+    assert(os.rename(tmp, path))
 
     return path
 end
@@ -320,7 +323,14 @@ function M.setup()
         end,
     })
 
-    pcall(M.generate)
+    -- Generate just after startup, not during it. Headless runs that quit
+    -- immediately skip this (scripts/generate-cheatsheet.sh calls generate()).
+    vim.api.nvim_create_autocmd("VimEnter", {
+        once = true,
+        callback = function()
+            vim.defer_fn(function() pcall(M.generate) end, 200)
+        end,
+    })
 end
-
+ 
 return M

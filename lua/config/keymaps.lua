@@ -25,8 +25,11 @@ map("n", "n", "nzzzv", { desc = "Next search result" })
 map("n", "N", "Nzzzv", { desc = "Previous search result" })
 
 -- Move through wrapped display lines naturally.
-map("n", "j", "gj", { desc = "Down display line" })
-map("n", "k", "gk", { desc = "Up display line" })
+-- Display-line movement only when no count is given, so 5j still moves 5 real lines.
+map("n", "j", function() return vim.v.count == 0 and "gj" or "j" end,
+    { expr = true, desc = "Down (display line; with a count, real lines)" })
+map("n", "k", function() return vim.v.count == 0 and "gk" or "k" end,
+    { expr = true, desc = "Up (display line; with a count, real lines)" })
 
 -- Keep visual selections after indenting.
 map("v", "<", "<gv", { desc = "Indent left" })
@@ -68,15 +71,15 @@ map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
 -- LSP
 -- ============================================================================
 
-map("n", "K", vim.lsp.buf.hover, { desc = "LSP hover documentation" })
-map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+map("n", "K", vim.lsp.buf.hover, { desc = "Hover: show docs for the symbol under the cursor" })
+map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition (<C-o> jumps back)" })
 map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-map("n", "gr", vim.lsp.buf.references, { desc = "Find references" })
-map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
-map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+map("n", "gr", vim.lsp.buf.references, { desc = "References: list every use of the symbol" })
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol everywhere (asks for the new name)" })
+map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action: pick a quick fix or refactor" })
 map("n", "<leader>D", vim.lsp.buf.type_definition, { desc = "Type definition" })
-map("n", "<leader>ds", vim.lsp.buf.document_symbol, { desc = "Document symbols" })
+map("n", "<leader>ds", vim.lsp.buf.document_symbol, { desc = "Symbols in this file (pick from a list)" })
 map("n", "<leader>ih", function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 end, { desc = "Toggle inlay hints" })
@@ -94,9 +97,9 @@ map("n", "<leader>dq", vim.diagnostic.setqflist, { desc = "Diagnostics to quickf
 -- Telescope
 -- ============================================================================
 
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Search project" })
-map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files by name (fuzzy)" })
+map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Search text in the project (needs ripgrep)" })
+map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Pick an open buffer" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Search help" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
 
@@ -115,8 +118,9 @@ end, { desc = "Show all keybindings" })
 -- ============================================================================
 
 map("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle file explorer" })
-map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics panel" })
-map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Buffer diagnostics" })
+map("n", "<leader>E", "<cmd>NvimTreeFindFile<cr>", { desc = "Reveal current file in the explorer" })
+map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics panel: all files (toggle)" })
+map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Diagnostics panel: this buffer only (toggle)" })
 
 map({ "n", "v" }, "<leader>cf", function()
     require("conform").format({

@@ -7,9 +7,15 @@ return {
         lazy = false,
         build = ":TSUpdate",
         config = function()
+            -- Parsers come from config/languages.lua (+ languages_local.lua),
+            -- plus the ones the enabled extras need (sql, http, dockerfile).
+            local parsers = require("util.languages").parsers()
+            local extras = require("util.extras")
+            for _, name in ipairs(extras.enabled()) do
+                vim.list_extend(parsers, extras.registry[name].parsers or {})
+            end
             require("nvim-treesitter.configs").setup({
-                -- Parsers come from config/languages.lua (+ languages_local.lua).
-                ensure_installed = require("util.languages").parsers(),
+                ensure_installed = parsers,
                 highlight = {
                     enable = true,
                 },

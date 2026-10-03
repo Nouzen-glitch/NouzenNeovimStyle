@@ -112,6 +112,7 @@ at full speed.
 | Key | Action |
 | --- | --- |
 | `<leader>e` | Toggle nvim-tree (`g?` inside for its help) |
+| `<leader>E` | Reveal the current file in nvim-tree |
 | `<leader>cf` | Format file / selection (n, v); also runs on save |
 | `]h` / `[h` | Next / previous git hunk |
 | `<leader>hs` `hr` `hp` | Stage / reset / preview hunk |
@@ -145,6 +146,20 @@ brackets). `mini.pairs` closes brackets and quotes as you type. Built-ins used
 constantly: `ciw`, `ci"`, `ci(`, `da{`, `yiw`. `gcc` toggles a comment, `gc` +
 motion/selection comments a range.
 
+## Reading the key popup (which-key)
+ 
+Press a key that starts a longer sequence (`<leader>`, `g`, `z`, `[`, `]`,
+`<C-w>`, or an operator such as `d`, `y`, `c`) and wait a moment. A popup lists
+what can follow, with a short description of each key.
+ 
+- An entry that is a group (for example `Find` under `<leader>`) opens another
+  list: type its next key to go deeper, or the final key to run the action.
+- After an operator (`d`, `y`, `c`) the popup lists motions and text objects
+  (`iw`, `i"`, `ap`, ...), so `d` then `i` shows what you can delete inside.
+- `<BS>` goes up one level, `<Esc>` closes the popup, `<C-d>` / `<C-u>` scroll.
+- `<leader>?` shows every key at once; `<leader>fk` searches keys by name.
+- No popup? Run `:checkhealth which-key`.
+ 
 ## Leader namespaces
 
 `f` Find, `w` Windows, `x` Diagnostics list, `h` Git hunks,

@@ -26,6 +26,8 @@ function M.help_lines()
         "  <leader>fc   search commands             <leader>fC   generated cheatsheet",
         "  <leader>fh   Neovim's built-in help      :EliteTutor  short practice tutorial",
         "  New to Vim? :Tutor is Neovim's own 30-minute tutorial.",
+        "  Press a key and wait: a popup lists what can follow (try <leader>, g, z, [, ], d, y).",
+        "  Type the next key to go deeper or run it. <BS> goes up one level, <Esc> closes the popup.",
         "",
         "MAKE IT YOURS (never edit shipped files: updates would stop)",
         "  :EliteEdit options     your options and vim.g.elite_* switches",
@@ -33,6 +35,7 @@ function M.help_lines()
         "  :EliteEdit plugins     your plugins, or tweaks to shipped ones",
         "  :EliteEdit languages   add a language (server, parser, formatter)",
         "  :EliteKeys             shipped keys your keymaps replaced or delayed",
+        "  :EliteFormat on|off    turn format on save on or off for this session",
         "  :EliteExtras           opt-in features (sessions, dashboard, docker, database, rest, dap)",
         "",
         "KEEP YOUR FILES SAFE (lua/user/ is yours and is NOT in git)",
@@ -201,8 +204,10 @@ function M.setup()
     end, {
         nargs = 1,
         desc = "Create/open your personal file: options, keymaps, plugins, languages",
-        complete = function()
-            return { "options", "keymaps", "plugins", "languages" }
+        complete = function(lead)
+            return vim.tbl_filter(function(name)
+                return vim.startswith(name, lead)
+            end, { "options", "keymaps", "plugins", "languages" })
         end,
     })
 
@@ -210,6 +215,27 @@ function M.setup()
         require("util.welcome").show(require("util.extras").lines(), "Extras")
     end, { desc = "List opt-in extras and which are enabled" })
 
+    vim.api.nvim_create_user_command("EliteFormat", function(o)
+        if o.args == "on" then
+            vim.g.elite_format_on_save = true
+        elseif o.args == "off" then
+            vim.g.elite_format_on_save = false
+        elseif o.args ~= "" and o.args ~= "status" then
+            vim.notify("Usage: :EliteFormat on|off|status", vim.log.levels.WARN)
+            return
+        end
+        vim.notify("Format on save: " .. (vim.g.elite_format_on_save == false and "off" or "on")
+            .. " (this session only; <leader>cf always formats)")
+    end, {
+        nargs = "?",
+        desc = "Turn format on save on or off for this session",
+        complete = function(lead)
+            return vim.tbl_filter(function(name)
+                return vim.startswith(name, lead)
+            end, { "on", "off", "status" })
+        end,
+    })
+ 
     vim.api.nvim_create_user_command("EliteBackup", backup, {
         nargs = "?",
         complete = "file",

@@ -48,13 +48,16 @@ function M.parse(lines)
     end
     local body = vim.trim(table.concat(vim.list_slice(lines, i, #lines), "\n"))
 
-    local missing = {}
+    local missing, used = {}, {}
     local function expand(text)
         return (text:gsub("{{%s*([%w_]+)%s*}}", function(name)
             local value = vim.env[name]
             if not value then
                 table.insert(missing, name)
                 return ""
+            end
+            if not vim.tbl_contains(used, name) then
+                table.insert(used, name)
             end
             return value
         end))
@@ -67,7 +70,7 @@ function M.parse(lines)
     if #missing > 0 then
         return nil, "Environment variable(s) not set: " .. table.concat(missing, ", ")
     end
-    return { method = method, url = url, headers = headers, body = body ~= "" and body or nil }
+    return { method = method, url = url, headers = headers, body = body ~= "" and body or nil, used = used }
 end
 
 function M.command(req)
@@ -113,6 +116,16 @@ function M.run()
     if not req then
         vim.notify(err, vim.log.levels.WARN)
         return
+    end
+    -- A .http file from somewhere else could name any environment variable
+    -- ({{AWS_SECRET_ACCESS_KEY}}), so say where they are about to be sent.
+    if #req.used > 0 then
+        local host = req.url:match("^%a+://[^/?#]+") or req.url
+        local msg = string.format("Send this request to %s\nusing environment variable(s): %s?",
+            host, table.concat(req.used, ", "))
+        if vim.fn.confirm(msg, "&Send\n&Cancel", 2) ~= 1 then
+            return
+        end
     end
     vim.system(M.command(req), { text = true, stdin = req.body }, function(res)
         vim.schedule(function()

@@ -27,15 +27,16 @@ The live cheatsheet is **generated** from the running editor (`<leader>fC` or
 
 - Neovim 0.11+, `git`, a C compiler and `make` (Tree-sitter, LuaSnip, fzf-native)
 - `ripgrep` (Telescope live grep), `curl`, `unzip` (Mason)
+- A clipboard tool (`wl-clipboard` or `xclip`): yank and paste use the system clipboard
 - A Nerd Font in your terminal (icons)
 - Node.js + npm, Python 3, and optionally Go: Mason uses them to install language servers and formatters
 - `rustup` if you use Rust: `rustfmt` comes with it (it is not a Mason package)
 
 ```bash
 # Fedora
-sudo dnf install neovim git ripgrep gcc gcc-c++ make curl unzip nodejs npm python3 golang
+sudo dnf install neovim git ripgrep gcc gcc-c++ make curl unzip nodejs npm python3 golang wl-clipboard xclip
 # Arch
-sudo pacman -S neovim git ripgrep base-devel curl unzip nodejs npm python go
+sudo pacman -S neovim git ripgrep base-devel curl unzip nodejs npm python go wl-clipboard xclip
 ```
 
 ## Install
@@ -90,7 +91,7 @@ First launch checklist:
 ├── lazy-lock.json            plugin versions the maintainer tested (seeds each user's personal copy)
 ├── CHANGELOG.md              what changed, newest first
 ├── .gitignore                keeps your personal layer out of git
-├── docs/                     README, GETTING_STARTED, INSTALL, MIGRATING, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE
+├── docs/                     README, GETTING_STARTED, INSTALL, MIGRATING, KEYBINDINGS, ADDING_LANGUAGES, COMPONENTS, ENVIRONMENT_GUIDE, EXTRAS
 ├── scripts/
 │   ├── install.sh            alongside or replace install, with backup and dry-run
 │   ├── uninstall.sh          removes the link, restores your backup

@@ -12,7 +12,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_create_autocmd("BufReadPost", {
     group = group,
     callback = function(args)
-        if vim.bo[args.buf].filetype == "gitcommit" then
+        local ft = vim.bo[args.buf].filetype
+        if vim.bo[args.buf].buftype ~= "" or ft == "gitcommit" or ft == "gitrebase" or ft == "help" then
             return
         end
         local mark = vim.api.nvim_buf_get_mark(args.buf, '"')

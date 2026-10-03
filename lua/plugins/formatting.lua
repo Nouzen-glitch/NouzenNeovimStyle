@@ -7,6 +7,10 @@ return {
             formatters_by_ft = require("util.languages").formatters_by_ft(),
 
             format_on_save = function(bufnr)
+                -- :EliteFormat off turns format on save off for this session.
+                if vim.g.elite_format_on_save == false then
+                    return
+                end
                 -- Disable automatic formatting for huge files.
                 local max_size = 200 * 1024 -- 200 KB
                 local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
